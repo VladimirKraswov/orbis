@@ -25,11 +25,23 @@ export const modalStyles = {
     position: 'absolute',
     top: '8px',
     right: '8px',
-    background: 'none',
+    background: 'linear-gradient(145deg, #d32f2f, #b71c1c)', // Градиент с теплым красным
     border: 'none',
     cursor: 'pointer',
-    fontSize: '16px',
-    color: '#f4f4f4',
+    fontSize: '14px',
+    color: 'white',
+    padding: '5px 10px',
+    borderRadius: '50%',
+    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
+    transition: 'all 0.3s ease',
+  },
+  closeButtonHover: {
+    background: 'linear-gradient(145deg, #b71c1c, #d32f2f)', // Градиент при наведении
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
+  },
+  closeButtonActive: {
+    background: 'linear-gradient(145deg, #b71c1c, #8e0000)', // Градиент при нажатии
+    boxShadow: 'inset 0 2px 5px rgba(0, 0, 0, 0.5)',
   },
   content: {
     marginTop: '20px',

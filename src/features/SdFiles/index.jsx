@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'preact/hooks';
 import { Table, Modal, Button } from '../../components';
 import { styles } from './styles';
+import { createFolderApi, deleteFileApi, fetchFilesApi, renameFileApi } from '../../api/apiFiles';
 
-const SdFiles = ({ apiUrl }) => {
+const SdFiles = () => {
   const [files, setFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -23,13 +24,8 @@ const SdFiles = ({ apiUrl }) => {
     setError(null);
 
     try {
-      const response = await fetch(`/api/upload?path=/`, { method: 'GET' });
-      if (!response.ok) {
-        throw new Error(`Failed to fetch files: ${response.status}`);
-      }
-
-      const data = await response.json();
-      const visibleFiles = data.files.filter((file) => !hiddenFiles.includes(file.name));
+      const data = await fetchFilesApi('/');
+      const visibleFiles = data.filter((file) => !hiddenFiles.includes(file.name));
       setFiles(visibleFiles);
     } catch (err) {
       setError(err.message);
@@ -48,12 +44,12 @@ const SdFiles = ({ apiUrl }) => {
     try {
       if (type === 'create-folder') {
         if (!newFolderName.trim()) return;
-        await fetch(`/api/upload?path=/${newFolderName}`, { method: 'POST' });
+        await createFolderApi(newFolderName);
       } else if (type === 'rename') {
         if (!renameValue.trim()) return;
-        await fetch(`/api/upload?path=/${data.shortname}&newname=${renameValue}`, { method: 'PUT' });
+        await renameFileApi(data.shortname, renameValue);
       } else if (type === 'delete') {
-        await fetch(`/api/upload?path=/${data.shortname}`, { method: 'DELETE' });
+        await deleteFileApi(data.shortname);
       }
       fetchFiles();
     } catch (err) {
