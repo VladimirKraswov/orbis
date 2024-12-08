@@ -8,11 +8,12 @@
 	},
 	"dependencies": {
 		"preact": "^10.20.0",
+		"preact-router": "^4.1.2",
 		"three": "^0.171.0"
 	},
 	"devDependencies": {
-		"http-proxy-middleware": "^3.0.3",
 		"@preact/preset-vite": "^2.8.2",
+		"http-proxy-middleware": "^3.0.3",
 		"vite": "^5.2.2"
 	}
 }

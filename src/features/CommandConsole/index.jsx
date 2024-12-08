@@ -1,5 +1,6 @@
 // @ts-ignore
 import { useState, useEffect, useRef } from 'preact/hooks';
+import styles from './styles';
 
 const CommandConsole = ({ commands, currentCommand, onCommandChange, onCommandSubmit }) => {
   const [isAutoscroll, setIsAutoscroll] = useState(true);
@@ -30,111 +31,54 @@ const CommandConsole = ({ commands, currentCommand, onCommandChange, onCommandSu
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div style={styles.container}>
       {/* Верхняя панель настроек */}
-      <div
-        style={{
-          padding: '8px',
-          background: '#333',
-          borderBottom: '1px solid #555',
-          display: 'flex',
-          alignItems: 'center',
-          color: '#ccc',
-        }}
-      >
-        <label style={{ marginRight: '16px', display: 'flex', alignItems: 'center' }}>
+      <div style={styles.settingsPanel}>
+        <label style={styles.label}>
           <input
             type="checkbox"
             checked={isAutoscroll}
             // @ts-ignore
             onChange={(e) => setIsAutoscroll(e.target.checked)}
-            style={{ marginRight: '4px', accentColor: '#007bff' }}
+            style={styles.checkbox}
           />
           Autoscroll
         </label>
-        <label style={{ marginRight: '16px', display: 'flex', alignItems: 'center' }}>
+        <label style={styles.label}>
           <input
             type="checkbox"
             checked={isVerbose}
             // @ts-ignore
             onChange={(e) => setIsVerbose(e.target.checked)}
-            style={{ marginRight: '4px', accentColor: '#007bff' }}
+            style={styles.checkbox}
           />
           Verbose mode
         </label>
-        <button
-          onClick={handleClear}
-          style={{
-            marginLeft: 'auto',
-            padding: '4px 8px',
-            background: '#555',
-            color: '#fff',
-            border: '1px solid #777',
-            borderRadius: '4px',
-            cursor: 'pointer',
-          }}
-        >
+        <button onClick={handleClear} style={styles.clearButton}>
           Clear
         </button>
       </div>
 
       {/* Область вывода команд */}
-      <div
-        ref={consoleRef}
-        style={{
-          flex: 1,
-          overflowY: 'auto',
-          padding: '8px',
-          background: '#222',
-          color: '#ccc',
-          borderBottom: '1px solid #555',
-          fontFamily: 'monospace',
-        }}
-      >
+      <div ref={consoleRef} style={styles.consoleOutput}>
         {commands.map((cmd, index) => (
-          <div key={index} style={{ margin: '4px 0' }}>
+          <div key={index} style={styles.commandItem}>
             {cmd}
           </div>
         ))}
       </div>
 
       {/* Форма отправки команды */}
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: 'flex',
-          borderTop: '1px solid #555',
-          padding: '8px',
-          background: '#333',
-        }}
-      >
+      <form onSubmit={handleSubmit} style={styles.commandLine}>
         <input
           type="text"
           value={currentCommand}
           // @ts-ignore
           onChange={(e) => onCommandChange(e.target.value)}
           placeholder="Send Command..."
-          style={{
-            flex: 1,
-            padding: '8px',
-            marginRight: '8px',
-            background: '#222',
-            color: '#ccc',
-            border: '1px solid #444',
-            borderRadius: '4px',
-          }}
+          style={styles.input}
         />
-        <button
-          type="submit"
-          style={{
-            padding: '8px 16px',
-            background: '#555',
-            color: '#fff',
-            border: '1px solid #777',
-            borderRadius: '4px',
-            cursor: 'pointer',
-          }}
-        >
+        <button type="submit" style={styles.sendButton}>
           Send
         </button>
       </form>

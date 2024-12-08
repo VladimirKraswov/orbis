@@ -1,17 +1,6 @@
 import { render } from 'preact';
-
-import Home from './routes/home';
-
+import AppRoutes from './routes/AppRoutes';
 import './style.css';
 
-export function App() {
-
-	return (
-		<div style={{ display: 'flex', flexDirection: 'column' }}>
-			<Home/>
-			
-		</div>	
-	);
-}
-
-render(<App />, document.getElementById('app'));
+const rootElement = document.getElementById('app');
+render(<AppRoutes />, rootElement);

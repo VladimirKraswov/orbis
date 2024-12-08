@@ -1,0 +1,76 @@
+export const styles = {
+  container: {
+    backgroundColor: '#252526',
+    color: '#ffffff',
+    overflowY: 'auto',
+    border: '1px solid #444',
+    borderRadius: '4px',
+    fontFamily: 'monospace',
+    padding: '8px',
+    aspectRatio: '1 / 1',
+  },
+  header: {
+    margin: '0',
+    padding: '8px',
+    backgroundColor: '#2a2a2a',
+    borderBottom: '1px solid #3c3c3c',
+    fontSize: '16px',
+    color: '#f4f4f4',
+  },
+  dialog: {
+    position: 'fixed',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    backgroundColor: '#2e2e2e',
+    padding: '16px',
+    borderRadius: '8px',
+    boxShadow: '0 6px 12px rgba(0, 0, 0, 0.5)',
+    zIndex: 1000,
+    color: '#f4f4f4',
+    width: '320px',
+  },
+  input: {
+    width: '100%',
+    padding: '8px',
+    borderRadius: '4px',
+    border: '1px solid #444',
+    backgroundColor: '#2a2a2a',
+    color: '#f4f4f4',
+    fontSize: '14px',
+  },
+  button: {
+    backgroundColor: '#3b3b3b',
+    color: '#f4f4f4',
+    border: '1px solid #444',
+    borderRadius: '4px',
+    padding: '6px 12px',
+    cursor: 'pointer',
+    fontSize: '14px',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+    transition: 'background-color 0.3s, box-shadow 0.3s',
+  },
+};
+
+export const tableStyles = {
+  table: {
+    width: '100%',
+    borderCollapse: 'collapse',
+  },
+  header: {
+    textAlign: 'left',
+    padding: '8px',
+    backgroundColor: '#3a3a3a',
+    color: '#eaeaea',
+    borderBottom: '1px solid #4c4c4c',
+  },
+  cell: {
+    padding: '8px',
+    color: '#dedede',
+    borderBottom: '1px solid #3c3c3c',
+  },
+  row: {
+    backgroundColor: '#2e2e2e',
+    transition: 'background-color 0.3s',
+  },
+};

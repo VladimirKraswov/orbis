@@ -1,11 +1,12 @@
+// @ts-ignore
 import { h } from 'preact';
 import { useState } from 'preact/hooks';
-import GridView from '../../components/GridView';
-import ControlPanel from '../../components/ControlPanel';
-import CommandConsole from '../../components/CommandConsole';
-import SdFiles from '../../components/SdFiles';
+import GridView from '../../features/GridView';
+import ControlPanel from '../../features/Controls';
+import CommandConsole from '../../features/CommandConsole';
+import SdFiles from '../../features/SdFiles';
 
-const Home = () => {
+const HomePage = (props) => { // Добавляем props
   const [command, setCommand] = useState('');
   const [commands, setCommands] = useState([]);
   const [currentCommand, setCurrentCommand] = useState('');
@@ -28,20 +29,18 @@ const Home = () => {
         color: '#cccccc',
       }}
     >
-      {/* Основная рабочая область */}
       <div
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(512px, 1fr))',
-          gridAutoRows: 'minmax(512px, 1fr)', // Гибкое управление высотой
-          gap: '16px', // Увеличенный отступ между блоками
+          gridAutoRows: 'minmax(512px, 1fr)',
+          gap: '16px',
           padding: '16px',
           flex: 1,
           overflow: 'auto',
           boxSizing: 'border-box',
         }}
       >
-        {/* Панель управления */}
         <div
           style={{
             backgroundColor: '#252526',
@@ -49,16 +48,14 @@ const Home = () => {
             border: '1px solid #444',
             borderRadius: '4px',
             minHeight: '512px',
-            maxHeight: '400px', // Ограничение максимальной высоты
-            overflow: 'auto', // Добавление прокрутки
+            maxHeight: '400px',
+            overflow: 'auto',
             boxSizing: 'border-box',
           }}
         >
           <h2 style={headerStyle}>Controls:</h2>
           <ControlPanel onCommand={handleCommandSubmit} />
         </div>
-
-        {/* Визуализация сетки */}
         <div
           style={{
             backgroundColor: '#1e1e1e',
@@ -67,7 +64,7 @@ const Home = () => {
             borderRadius: '4px',
             minHeight: '512px',
             maxHeight: '400px',
-            overflow: 'hidden', // Скрыть выходящее содержимое
+            overflow: 'hidden',
             boxSizing: 'border-box',
           }}
         >
@@ -76,8 +73,6 @@ const Home = () => {
             <GridView />
           </div>
         </div>
-
-        {/* Вывод команд */}
         <div
           style={{
             backgroundColor: '#252526',
@@ -98,8 +93,6 @@ const Home = () => {
             onCommandSubmit={handleCommandSubmit}
           />
         </div>
-
-        {/* Лог-панель */}
         <div
           style={{
             backgroundColor: '#252526',
@@ -121,8 +114,6 @@ const Home = () => {
             </div>
           ))}
         </div>
-
-        {/* Блок SD Files */}
         <div
           style={{
             backgroundColor: '#252526',
@@ -143,7 +134,6 @@ const Home = () => {
   );
 };
 
-// Общие стили для заголовков блоков
 const headerStyle = {
   position: 'sticky',
   top: '0',
@@ -156,4 +146,4 @@ const headerStyle = {
   color: '#ffffff',
 };
 
-export default Home;
+export default HomePage;
