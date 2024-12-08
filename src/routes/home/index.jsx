@@ -1,4 +1,3 @@
-// @ts-ignore
 import { h } from 'preact';
 import { useState } from 'preact/hooks';
 import GridView from '../../components/GridView';
@@ -20,16 +19,26 @@ const Home = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: '#1e1e1e', color: '#cccccc' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100vh',
+        backgroundColor: '#1e1e1e',
+        color: '#cccccc',
+      }}
+    >
       {/* Основная рабочая область */}
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-          gap: '8px',
-          padding: '8px',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(512px, 1fr))',
+          gridAutoRows: 'minmax(512px, 1fr)', // Гибкое управление высотой
+          gap: '16px', // Увеличенный отступ между блоками
+          padding: '16px',
           flex: 1,
           overflow: 'auto',
+          boxSizing: 'border-box',
         }}
       >
         {/* Панель управления */}
@@ -37,10 +46,12 @@ const Home = () => {
           style={{
             backgroundColor: '#252526',
             color: '#ffffff',
-            overflow: 'auto',
             border: '1px solid #444',
             borderRadius: '4px',
-            aspectRatio: '1 / 1', // Сделать блок квадратным
+            minHeight: '512px',
+            maxHeight: '400px', // Ограничение максимальной высоты
+            overflow: 'auto', // Добавление прокрутки
+            boxSizing: 'border-box',
           }}
         >
           <h2 style={headerStyle}>Controls:</h2>
@@ -54,10 +65,13 @@ const Home = () => {
             color: '#ffffff',
             border: '1px solid #444',
             borderRadius: '4px',
-            aspectRatio: '1 / 1', // Сделать блок квадратным
+            minHeight: '512px',
+            maxHeight: '400px',
+            overflow: 'hidden', // Скрыть выходящее содержимое
+            boxSizing: 'border-box',
           }}
         >
-          <h2 style={{ ...headerStyle, borderBottom: '1px solid #444' }}>3D View:</h2>
+          <h2 style={headerStyle}>3D View:</h2>
           <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
             <GridView />
           </div>
@@ -68,10 +82,12 @@ const Home = () => {
           style={{
             backgroundColor: '#252526',
             color: '#ffffff',
-            overflow: 'auto',
             border: '1px solid #444',
             borderRadius: '4px',
-            aspectRatio: '1 / 1', // Сделать блок квадратным
+            minHeight: '512px',
+            maxHeight: '400px',
+            overflow: 'auto',
+            boxSizing: 'border-box',
           }}
         >
           <h2 style={headerStyle}>Commands:</h2>
@@ -89,14 +105,16 @@ const Home = () => {
             backgroundColor: '#252526',
             color: '#cccccc',
             overflowY: 'auto',
-            padding: '8px',
+            padding: '16px',
             border: '1px solid #444',
             borderRadius: '4px',
             fontFamily: 'monospace',
-            aspectRatio: '1 / 1', // Сделать блок квадратным
+            minHeight: '512px',
+            maxHeight: '400px',
+            boxSizing: 'border-box',
           }}
         >
-          <h2 style={{ ...headerStyle, marginBottom: '8px' }}>GRBL Reports:</h2>
+          <h2 style={headerStyle}>GRBL Reports:</h2>
           {logMessages.map((log, index) => (
             <div key={index} style={{ margin: '4px 0', color: '#aaaaaa' }}>
               {log}
@@ -105,7 +123,21 @@ const Home = () => {
         </div>
 
         {/* Блок SD Files */}
-        <SdFiles apiUrl="http://192.168.1.149" />
+        <div
+          style={{
+            backgroundColor: '#252526',
+            color: '#ffffff',
+            border: '1px solid #444',
+            borderRadius: '4px',
+            minHeight: '300px',
+            maxHeight: '400px',
+            overflow: 'auto',
+            boxSizing: 'border-box',
+          }}
+        >
+          <h2 style={headerStyle}>SD Files:</h2>
+          <SdFiles apiUrl="http://192.168.1.149" />
+        </div>
       </div>
     </div>
   );
@@ -113,6 +145,9 @@ const Home = () => {
 
 // Общие стили для заголовков блоков
 const headerStyle = {
+  position: 'sticky',
+  top: '0',
+  zIndex: '1',
   margin: '0',
   padding: '8px',
   backgroundColor: '#333',

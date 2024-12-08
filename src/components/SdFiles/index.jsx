@@ -1,13 +1,16 @@
 // @ts-ignore
+// @ts-ignore
 import { h } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 
+// @ts-ignore
 const SdFiles = ({ apiUrl }) => {
   const [files, setFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  // @ts-ignore
   const [openMenu, setOpenMenu] = useState(null);
-  const [dialog, setDialog] = useState({ isOpen: false, type: '', data: null }); // Для диалогов
+  const [dialog, setDialog] = useState({ isOpen: false, type: '', data: null });
   const [newFolderName, setNewFolderName] = useState('');
   const [renameValue, setRenameValue] = useState('');
 
@@ -57,6 +60,11 @@ const SdFiles = ({ apiUrl }) => {
     setDialog({ isOpen: true, type: 'delete', data: file });
   };
 
+  const handleRun = (file) => {
+    console.log(`Run action triggered for file: ${file.shortname}`);
+    // Реализуйте логику запуска файла
+  };
+
   const handleDialogConfirm = async () => {
     const { type, data } = dialog;
 
@@ -97,8 +105,6 @@ const SdFiles = ({ apiUrl }) => {
         fontFamily: 'monospace',
         padding: '8px',
         aspectRatio: '1 / 1',
-        minWidth: '300px',
-        maxWidth: '500px',
       }}
     >
       <h2 style={headerStyle}>SD Files:</h2>
@@ -139,11 +145,14 @@ const SdFiles = ({ apiUrl }) => {
                 <td style={tdStyle}>{file.size !== '-1' ? `${file.size} bytes` : 'Directory'}</td>
                 <td style={tdStyle}>
                   <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                    <button style={buttonStyle} onClick={() => handleRename(file)}>
-                      Rename
+                    <button style={runButtonStyle} onClick={() => handleRun(file)}>
+                      ▶️
                     </button>
-                    <button style={buttonStyle} onClick={() => handleDelete(file)}>
-                      Delete
+                    <button style={renameButtonStyle} onClick={() => handleRename(file)}>
+                      ✏️
+                    </button>
+                    <button style={deleteButtonStyle} onClick={() => handleDelete(file)}>
+                      🗑️
                     </button>
                   </div>
                 </td>
@@ -163,6 +172,7 @@ const SdFiles = ({ apiUrl }) => {
             <input
               type="text"
               value={newFolderName}
+              // @ts-ignore
               onChange={(e) => setNewFolderName(e.target.value)}
               placeholder="Folder name"
               style={inputStyle}
@@ -172,6 +182,7 @@ const SdFiles = ({ apiUrl }) => {
             <input
               type="text"
               value={renameValue}
+              // @ts-ignore
               onChange={(e) => setRenameValue(e.target.value)}
               placeholder="New name"
               style={inputStyle}
@@ -198,10 +209,10 @@ const SdFiles = ({ apiUrl }) => {
 const headerStyle = {
   margin: '0',
   padding: '8px',
-  backgroundColor: '#333',
-  borderBottom: '1px solid #444',
+  backgroundColor: '#2a2a2a',
+  borderBottom: '1px solid #3c3c3c',
   fontSize: '16px',
-  color: '#ffffff',
+  color: '#f4f4f4',
 };
 
 const tableStyle = {
@@ -212,38 +223,62 @@ const tableStyle = {
 const thStyle = {
   textAlign: 'left',
   padding: '8px',
-  backgroundColor: '#333',
-  color: '#ffffff',
-  borderBottom: '1px solid #444',
+  backgroundColor: '#3a3a3a',
+  color: '#eaeaea',
+  borderBottom: '1px solid #4c4c4c',
 };
 
 const tdStyle = {
   padding: '8px',
-  color: '#cccccc',
-  borderBottom: '1px solid #444',
+  color: '#dedede',
+  borderBottom: '1px solid #3c3c3c',
 };
 
 const fileRowStyle = {
-  backgroundColor: '#252526',
+  backgroundColor: '#2e2e2e',
+  transition: 'background-color 0.3s',
 };
 
 const buttonStyle = {
-  backgroundColor: '#444',
-  color: '#ffffff',
-  border: 'none',
+  backgroundColor: '#3b3b3b',
+  color: '#f4f4f4',
+  border: '1px solid #444',
   borderRadius: '4px',
-  padding: '4px 8px',
+  padding: '6px 12px',
   cursor: 'pointer',
   fontSize: '14px',
+  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+  transition: 'background-color 0.3s, box-shadow 0.3s',
+};
+
+const runButtonStyle = {
+  ...buttonStyle,
+  backgroundColor: '#4CAF50',
+  color: '#ffffff',
+};
+
+const renameButtonStyle = {
+  ...buttonStyle,
+  backgroundColor: '#2196F3',
+  color: '#ffffff',
+};
+
+const deleteButtonStyle = {
+  ...buttonStyle,
+  backgroundColor: '#FF5722',
+  color: '#ffffff',
 };
 
 const uploadLabelStyle = {
-  backgroundColor: '#444',
-  color: '#ffffff',
-  padding: '4px 8px',
+  backgroundColor: '#3b3b3b',
+  color: '#f4f4f4',
+  padding: '6px 12px',
   borderRadius: '4px',
   cursor: 'pointer',
   fontSize: '14px',
+  border: '1px solid #444',
+  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+  transition: 'background-color 0.3s',
 };
 
 const dialogStyle = {
@@ -251,23 +286,38 @@ const dialogStyle = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  backgroundColor: '#333',
+  backgroundColor: '#2e2e2e',
   padding: '16px',
-  borderRadius: '4px',
-  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
+  borderRadius: '8px',
+  boxShadow: '0 6px 12px rgba(0, 0, 0, 0.5)',
   zIndex: 1000,
-  color: '#ffffff',
-  width: '300px',
+  color: '#f4f4f4',
+  width: '320px',
 };
 
 const inputStyle = {
   width: '100%',
   padding: '8px',
   borderRadius: '4px',
-  border: '1px solid #555',
-  backgroundColor: '#1e1e1e',
-  color: '#ffffff',
+  border: '1px solid #444',
+  backgroundColor: '#2a2a2a',
+  color: '#f4f4f4',
   fontSize: '14px',
 };
+
+// Hover эффекты
+fileRowStyle[':hover'] = {
+  backgroundColor: '#383838',
+};
+
+buttonStyle[':hover'] = {
+  backgroundColor: '#4b4b4b',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
+};
+
+uploadLabelStyle[':hover'] = {
+  backgroundColor: '#4b4b4b',
+};
+
 
 export default SdFiles;
