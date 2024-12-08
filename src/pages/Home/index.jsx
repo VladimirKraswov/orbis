@@ -86,12 +86,7 @@ const HomePage = (props) => { // Добавляем props
           }}
         >
           <h2 style={headerStyle}>Commands:</h2>
-          <CommandConsole
-            commands={commands}
-            currentCommand={currentCommand}
-            onCommandChange={setCurrentCommand}
-            onCommandSubmit={handleCommandSubmit}
-          />
+          <CommandConsole />
         </div>
         <div
           style={{

@@ -1,33 +1,70 @@
-// @ts-ignore
 import { useState, useEffect, useRef } from 'preact/hooks';
 import styles from './styles';
+import { connectWebSocket, sendHttpCommand } from '../../api/apiCommands';
 
-const CommandConsole = ({ commands, currentCommand, onCommandChange, onCommandSubmit }) => {
+const CommandConsole = ({ apiUrl = '192.168.1.149' }) => {
+  const [commands, setCommands] = useState([]);
+  const [currentCommand, setCurrentCommand] = useState('');
   const [isAutoscroll, setIsAutoscroll] = useState(true);
-  const [isVerbose, setIsVerbose] = useState(false);
   const consoleRef = useRef();
+  const websocketRef = useRef(null);
 
   // Автопрокрутка
   useEffect(() => {
     if (isAutoscroll && consoleRef.current) {
-      // @ts-ignore
       consoleRef.current.scrollTop = consoleRef.current.scrollHeight;
     }
   }, [commands, isAutoscroll]);
 
-  const handleSubmit = (e) => {
+  // WebSocket подключение
+  useEffect(() => {
+    websocketRef.current = connectWebSocket(
+      apiUrl,
+      () => setCommands((prev) => [...prev, 'WebSocket: Connected']),
+      (data, isBinary) => {
+        if (isBinary) {
+          setCommands((prev) => [...prev, data.trim()]);
+        } else if (!isIgnoredMessage(data)) {
+          setCommands((prev) => [...prev, data.trim()]);
+        }
+      },
+      (error) => setCommands((prev) => [...prev, `WebSocket: Error: ${error}`]),
+      () => setCommands((prev) => [...prev, 'WebSocket: Disconnected'])
+    );
+
+    return () => {
+      if (websocketRef.current) {
+        websocketRef.current.close();
+      }
+    };
+  }, [apiUrl]);
+
+  // Фильтрация ненужных сообщений
+  const isIgnoredMessage = (data) => {
+    const ignoredMessages = ['PING:', 'CURRENT_ID:', 'ACTIVE_ID:'];
+    return ignoredMessages.some((msg) => data.startsWith(msg));
+  };
+
+  // Отправка команды через HTTP
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (currentCommand.trim()) {
-      const command = isVerbose
-        ? `[VERBOSE] ${currentCommand}`
-        : currentCommand; // Добавление режима Verbose
-      onCommandSubmit(command);
+      try {
+        const response = await sendHttpCommand(apiUrl, currentCommand);
+        setCommands((prev) => [
+          ...prev,
+          `HTTP Sent: ${currentCommand}`,
+          `Response: ${response}`,
+        ]);
+      } catch (error) {
+        setCommands((prev) => [...prev, `HTTP Error: ${error.message}`]);
+      }
+      setCurrentCommand('');
     }
   };
 
   const handleClear = () => {
-    onCommandSubmit('[CLEAR LOGS]');
-    console.log('Console cleared');
+    setCommands([]);
   };
 
   return (
@@ -38,21 +75,10 @@ const CommandConsole = ({ commands, currentCommand, onCommandChange, onCommandSu
           <input
             type="checkbox"
             checked={isAutoscroll}
-            // @ts-ignore
             onChange={(e) => setIsAutoscroll(e.target.checked)}
             style={styles.checkbox}
           />
           Autoscroll
-        </label>
-        <label style={styles.label}>
-          <input
-            type="checkbox"
-            checked={isVerbose}
-            // @ts-ignore
-            onChange={(e) => setIsVerbose(e.target.checked)}
-            style={styles.checkbox}
-          />
-          Verbose mode
         </label>
         <button onClick={handleClear} style={styles.clearButton}>
           Clear
@@ -73,8 +99,7 @@ const CommandConsole = ({ commands, currentCommand, onCommandChange, onCommandSu
         <input
           type="text"
           value={currentCommand}
-          // @ts-ignore
-          onChange={(e) => onCommandChange(e.target.value)}
+          onChange={(e) => setCurrentCommand(e.target.value)}
           placeholder="Send Command..."
           style={styles.input}
         />
