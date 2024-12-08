@@ -9,6 +9,7 @@
 	"dependencies": {
 		"preact": "^10.20.0",
 		"preact-router": "^4.1.2",
+		"prop-types": "^15.8.1",
 		"three": "^0.171.0"
 	},
 	"devDependencies": {
