@@ -2,8 +2,7 @@
 import { useState } from 'preact/hooks';
 import Button from '../../components/Button';
 import { styles } from './styles';
-import { sendCommand } from '../../api/apiService';
-import { Switch } from '../../components';
+import { sendHttpCommand } from '../../api/apiCommands';
 
 const ControlPanel = ({ onCommand }) => {
   const [feedRateXY, setFeedRateXY] = useState(1000);
@@ -15,7 +14,7 @@ const ControlPanel = ({ onCommand }) => {
     const commandText = `$J=G91 G21 F${feedRate} ${axis}${direction * distance}`;
 
     try {
-      const response = await sendCommand(commandText);
+      const response = await sendHttpCommand(commandText);
       if (onCommand) {
         onCommand(response);
       }
@@ -27,7 +26,7 @@ const ControlPanel = ({ onCommand }) => {
   const handleHome = async (axis) => {
     const commandText = axis ? `$H${axis}` : '$H';
     try {
-      const response = await sendCommand(commandText);
+      const response = await sendHttpCommand(commandText);
       if (onCommand) {
         onCommand(response);
       }
@@ -39,7 +38,7 @@ const ControlPanel = ({ onCommand }) => {
   const handleResetCoordinates = async (fullReset = false) => {
     const commandText = fullReset ? `G10 L20 P0 X0 Y0 Z0` : `G10 L20 P0 X0`;
     try {
-      const response = await sendCommand(commandText);
+      const response = await sendHttpCommand(commandText);
       if (onCommand) {
         onCommand(response);
       }

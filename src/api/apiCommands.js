@@ -1,10 +1,11 @@
-export const connectWebSocket = (apiUrl, onOpen, onMessage, onError, onClose) => {
+const apiUrl = '192.168.1.149'
+export const connectWebSocket = (onOpen, onMessage, onError, onClose) => {
   try {
     const wsUrl = `ws://${apiUrl}:81/`;
     const websocket = new WebSocket(wsUrl, ['arduino']);
     websocket.binaryType = 'arraybuffer'; // Устанавливаем поддержку бинарных данных
 
-    websocket.onopen = () => {
+    websocket.onopen = async () => {
       console.log('WebSocket connected');
       if (onOpen) onOpen();
     };
@@ -37,6 +38,7 @@ export const connectWebSocket = (apiUrl, onOpen, onMessage, onError, onClose) =>
   }
 };
 
+
 export const sendWebSocketCommand = (websocket, command, onSendError) => {
   if (websocket && websocket.readyState === WebSocket.OPEN) {
     try {
@@ -54,9 +56,9 @@ export const sendWebSocketCommand = (websocket, command, onSendError) => {
 };
 
 
-export const sendHttpCommand = async (apiUrl, command) => {
+export const sendHttpCommand = async (command) => {
   // Формируем строку запроса вручную
-  const url = `http://${apiUrl}/command?commandText=${command}&PAGEID=0`;
+  const url = `/api/command?commandText=${command}&PAGEID=0`;
 
   try {
     const response = await fetch(url, { method: 'GET' });
