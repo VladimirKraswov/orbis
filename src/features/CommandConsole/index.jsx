@@ -22,6 +22,9 @@ const CommandConsole = () => {
   useEffect(() => {
     if (messages.length > 0) {
       const latestMessage = messages[messages.length - 1];
+      if (latestMessage === 'ok') {
+        setCommands((prev) => [...prev, 'WS: ok']);
+      }
       setCommands((prev) => [...prev, `WS: ${latestMessage}`]);
     }
   }, [messages]);
