@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
+import { connectWebSocket } from './apiCommands';
 
-import { connectWebSocket } from './api/apiCommands';
 
 const WebSocketContext = createContext({
   messages: [],

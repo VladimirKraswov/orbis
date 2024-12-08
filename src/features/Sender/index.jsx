@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { sendHttpCommand } from '../../api/apiCommands';
-import { useWebSocket } from '../../WebSocketContext';
+import { useWebSocket } from '../../api/WebSocketContext';
+
 
 const Sender = () => {
   const { messages } = useWebSocket();

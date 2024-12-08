@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'preact/hooks';
 import styles from './styles';
 import { sendHttpCommand } from '../../api/apiCommands';
-import { useWebSocket } from '../../WebSocketContext';
+import { useWebSocket } from '../../api/WebSocketContext';
 
 const CommandConsole = () => {
   const { messages } = useWebSocket();
