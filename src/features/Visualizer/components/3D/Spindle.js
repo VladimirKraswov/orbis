@@ -18,11 +18,11 @@ export function Spindle(axisGroup) {
 
   // Создаём wireframe для конуса
   const tipWireframe = new THREE.WireframeGeometry(tipGeometry);
-  const tipMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
+  const tipMaterial = new THREE.LineBasicMaterial({ color: 0x0000ff }); // Королевский синий цвет
   const tip = new THREE.LineSegments(tipWireframe, tipMaterial);
   
   // Позиционируем конус выше сетки, чтобы его вершина касалась сетки (Z=0)
-  tip.position.z = tipHeight/2;
+  tip.position.z = tipHeight / 2;
 
   // Добавляем конус в группу шпенделя
   spindleGroup.add(tip);

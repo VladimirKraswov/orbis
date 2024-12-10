@@ -66,14 +66,15 @@ const Visualizer = () => {
     const lineGeometry = new LineGeometry();
     lineGeometry.setPositions(positions);
   
-    // Создаем LineMaterial с толщиной линии
+    // Создаем LineMaterial с толстой линией и глубоким оранжевым цветом
     const lineMaterial = new LineMaterial({
-      color: 0x00ff00, // Зеленый цвет
-      linewidth: 2, // Толщина линии в пикселях
+      color: 0xFF4500, // Глубокий оранжевый цвет
+      linewidth: 5, // Толщина линии в пикселях
       dashed: false,
     });
   
-    lineMaterial.resolution.set(window.innerWidth, window.innerHeight); // Устанавливаем разрешение для правильной толщины
+    // Устанавливаем разрешение для правильной толщины линии
+    lineMaterial.resolution.set(window.innerWidth, window.innerHeight);
   
     // Создаем Line2
     const pathLine = new Line2(lineGeometry, lineMaterial);
@@ -84,6 +85,7 @@ const Visualizer = () => {
   
     pathLineRef.current = pathLine;
   };
+  
 
   const heightMapMeshRef = useRef(null);
 
@@ -203,7 +205,7 @@ const Visualizer = () => {
       />
 
       <div ref={mountRef} style={styles.content} />
-      
+
       <DimensionsModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}

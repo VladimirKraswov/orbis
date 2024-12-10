@@ -4,6 +4,13 @@ import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry';
 import { Label } from './Label';
 
+/**
+ * Создаёт координатные оси с метками.
+ * @param {number} arrowSize - Размер стрелок.
+ * @param {number} lineLength - Длина линий осей.
+ * @param {number} lineThickness - Толщина линий осей.
+ * @returns {THREE.Group} - Группа с осями и метками.
+ */
 export const Axes = (arrowSize = 50, lineLength = 25, lineThickness = 10) => {
   const group = new THREE.Group();
 
@@ -22,14 +29,45 @@ export const Axes = (arrowSize = 50, lineLength = 25, lineThickness = 10) => {
     return new Line2(geometry, material);
   };
 
-  const xLine = createAxisLine(new THREE.Vector3(0, 0, 0), new THREE.Vector3(lineLength, 0, 0), 0xff0000);
-  const yLine = createAxisLine(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, lineLength, 0), 0x00ff00);
-  const zLine = createAxisLine(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, lineLength), 0x0000ff);
+  // Создаём линии для X, Y, Z
+  const xLine = createAxisLine(
+    new THREE.Vector3(0, 0, 0),
+    new THREE.Vector3(lineLength, 0, 0),
+    0xff0000
+  );
+  const yLine = createAxisLine(
+    new THREE.Vector3(0, 0, 0),
+    new THREE.Vector3(0, lineLength, 0),
+    0x00ff00
+  );
+  const zLine = createAxisLine(
+    new THREE.Vector3(0, 0, 0),
+    new THREE.Vector3(0, 0, lineLength),
+    0x0000ff
+  );
 
-  // Создаём метки для осей с настройкой размера шрифта и толщины
-  const xLabel = Label('X', new THREE.Vector3(lineLength + 2, 0, 0), 'red', 256, 'bold');
-  const yLabel = Label('Y', new THREE.Vector3(0, lineLength + 2, 0), 'green', 256, 'bold');
-  const zLabel = Label('Z', new THREE.Vector3(0, 0, lineLength + 2), 'blue', 256, 'bold');
+  // Создаём метки для осей
+  const xLabel = Label(
+    'X',
+    new THREE.Vector3(lineLength + 2, 0, 1), // Поднятие по Z что бы не перекрывались плоскостью
+    'red',
+    256,
+    'bold'
+  );
+  const yLabel = Label(
+    'Y',
+    new THREE.Vector3(0, lineLength + 2, 1), // Поднятие по Z
+    'green',
+    256,
+    'bold'
+  );
+  const zLabel = Label(
+    'Z',
+    new THREE.Vector3(0, 0, lineLength + 2),
+    'blue',
+    256,
+    'bold'
+  );
 
   // Добавляем всё в группу
   group.add(xLine, yLine, zLine, xLabel, yLabel, zLabel);
