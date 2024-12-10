@@ -1,11 +1,11 @@
-// Visualizer.js
 import { useState, useEffect, useRef } from 'preact/hooks';
 import PropTypes from 'prop-types';
 import useThreeScene from './useThreeScene';
 import { createAxisHelpers, createLights, createSpindle } from './helpers';
 import useMachineStatus from '../../hooks/useMachineStatus';
 import { styles } from './styles';
-import { Modal } from '../../components';
+import Toolbar from './components/Toolbar';
+import DimensionsModal from './components/DimensionsModal';
 
 const Visualizer = () => {
   const [isFocused, setIsFocused] = useState(false);
@@ -13,11 +13,6 @@ const Visualizer = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [inputX, setInputX] = useState(100);
-  const [inputY, setInputY] = useState(100);
-  const [inputZ, setInputZ] = useState(10);
-
-  // Храним текущие размеры для сетки
   const [machineDims, setMachineDims] = useState({ x: 100, y: 100, z: 10 });
 
   const { mPos } = useMachineStatus();
@@ -32,16 +27,11 @@ const Visualizer = () => {
   });
 
   const spindleRef = useRef(null);
-  // @ts-ignore
-  const axisGroupObjRef = useRef(null); // Храним ссылку на созданный group
-
   const scaleFactor = 0.1;
 
-  // Инициализация сетки, осей, шпинделя
   useEffect(() => {
     if (!sceneRef.current) return;
     if (axisGroupRef.current) {
-      // Если уже была создана осевая группа, удаляем её из сцены
       sceneRef.current.remove(axisGroupRef.current);
       axisGroupRef.current = null;
     }
@@ -51,11 +41,6 @@ const Visualizer = () => {
     createLights(sceneRef.current);
     spindleRef.current = createSpindle(axisGroup);
 
-    // Устанавливаем камеру так, чтобы она показывала только положительную часть координат.
-    // Предполагаем, что машина имеет размеры machineDims.x, machineDims.y, machineDims.z,
-    // тогда положительная часть будет от 0 до machineDims.x и т.д.
-    // Расположим камеру таким образом, чтобы смотреть примерно на центр положительного квадранта.
-    // Например, поставим камеру в точку (machineDims.x, machineDims.y, machineDims.y) и направим на (machineDims.x/2, machineDims.y/2, machineDims.z/2)
     if (cameraRef.current) {
       cameraRef.current.position.set(machineDims.x, machineDims.y, machineDims.x);
       cameraRef.current.lookAt(machineDims.x / 2, machineDims.y / 2, machineDims.z / 2);
@@ -63,7 +48,6 @@ const Visualizer = () => {
 
   }, [sceneRef, machineDims]); 
 
-  // Обновляем позицию шпинделя при изменении mPos
   useEffect(() => {
     if (mPos && spindleRef.current) {
       const scaledX = mPos.x * scaleFactor;
@@ -76,15 +60,13 @@ const Visualizer = () => {
 
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
+  const handleApplyDimensions = ({x,y,z}) => {
+    setMachineDims({ x, y, z });
+    setIsModalOpen(false);
+  };
 
-  const handleApplyDimensions = () => {
-    const x = Number(inputX);
-    const y = Number(inputY);
-    const z = Number(inputZ);
-    if (!isNaN(x) && !isNaN(y) && !isNaN(z)) {
-      setMachineDims({ x, y, z });
-      setIsModalOpen(false);
-    }
+  const handleGetHeightMap = () => {
+    console.log("Получаем карту высот...");
   };
 
   return (
@@ -92,38 +74,22 @@ const Visualizer = () => {
       style={{
         outline: isFocused ? '2px solid blue' : 'none',
         ...styles.container,
+        position: 'relative'
       }}
     >
-      <button onClick={handleOpenModal} style={{}}>
-        Установить размеры
-      </button>
+      <Toolbar
+        onOpenDimensions={handleOpenModal}
+        onGetHeightMap={handleGetHeightMap}
+      />
       <div ref={mountRef} style={styles.content} />
-
-      <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-        <h3>Установить размеры обрабатываемой поверхности (mm)</h3>
-        <div style={{ marginBottom: '10px' }}>
-          <label>
-            X: <input type="number" value={inputX} onChange={(e) => setInputX(e.target.
-// @ts-ignore
-            value)} />
-          </label>
-        </div>
-        <div style={{ marginBottom: '10px' }}>
-          <label>
-            Y: <input type="number" value={inputY} onChange={(e) => setInputY(e.target.
-// @ts-ignore
-            value)} />
-          </label>
-        </div>
-        <div style={{ marginBottom: '10px' }}>
-          <label>
-            Z: <input type="number" value={inputZ} onChange={(e) => setInputZ(e.target.
-// @ts-ignore
-            value)} />
-          </label>
-        </div>
-        <button onClick={handleApplyDimensions}>Применить</button>
-      </Modal>
+      <DimensionsModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        defaultX={machineDims.x}
+        defaultY={machineDims.y}
+        defaultZ={machineDims.z}
+        onApply={handleApplyDimensions}
+      />
     </div>
   );
 };

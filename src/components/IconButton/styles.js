@@ -1,0 +1,37 @@
+export const styles = {
+  iconButtonStyle: {
+    width: '32px',
+    height: '32px',
+    background: '#555',
+    border: 'none',
+    borderRadius: '4px',
+    color: '#fff',
+    cursor: 'pointer',
+    fontSize: '18px',
+    lineHeight: '32px',
+    textAlign: 'center',
+    padding: 0,
+    position: 'relative',
+  },
+  tooltipStyle: {
+    visibility: 'hidden',
+    backgroundColor: '#000',
+    color: '#fff',
+    textAlign: 'center',
+    borderRadius: '4px',
+    padding: '5px',
+    fontSize: '12px',
+    position: 'absolute',
+    zIndex: 999,
+    bottom: '-40px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    whiteSpace: 'nowrap',
+    opacity: 0,
+    transition: 'opacity 0.2s',
+  },
+  buttonWrapperStyle: {
+    position: 'relative',
+    display: 'inline-block',
+  }
+}
