@@ -1,4 +1,3 @@
-// Visualizer.js
 import * as THREE from 'three';
 import { useState, useEffect, useRef } from 'preact/hooks';
 import PropTypes from 'prop-types';
@@ -10,24 +9,18 @@ import { Grid } from './components/3D/Grid';
 import { Lights } from './components/3D/Lights';
 import { Spindle } from './components/3D/Spindle';
 import { HeightMapPlane } from './components/3D/HeightMapP';
-import { Line2 } from 'three/examples/jsm/lines/Line2';
-import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial';
-import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry';
 import DimensionsModal from './components/Modals/DimensionsModal';
 import HeightMapModal from './components/Modals/HeightMapModal';
-
+import { Path } from './components/3D/Path';
 
 const Visualizer = () => {
+  const heightMapMeshRef = useRef(null);
   const [isFocused, setIsFocused] = useState(false);
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const pathPointsRef = useRef([]); // Хранение точек пути
-  const pathLineRef = useRef(null); // Ссылка на линию пути
-  const [showPath, setShowPath] = useState(true); 
-
+  const [showPath, setShowPath] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isHeightMapModalOpen, setIsHeightMapModalOpen] = useState(false);
-
   const [machineDims, setMachineDims] = useState({ x: 100, y: 100, z: 10 });
 
   const { mPos } = useMachineStatus();
@@ -38,146 +31,65 @@ const Visualizer = () => {
     setRotation,
     setPosition,
     setIsFocused,
-    graphicsSettings: { antialias: true }
+    graphicsSettings: { antialias: true },
   });
 
   const spindleRef = useRef(null);
-  const scaleFactor = 1;
-
-  const updatePathLine = () => {
-    if (!axisGroupRef.current || pathPointsRef.current.length < 2) return;
-  
-    // Удаляем старую линию, если она существует
-    if (pathLineRef.current) {
-      axisGroupRef.current.remove(pathLineRef.current);
-      pathLineRef.current.geometry.dispose();
-      pathLineRef.current.material.dispose();
-      pathLineRef.current = null;
-    }
-  
-    // Конвертируем точки пути в массив координат
-    const positions = pathPointsRef.current.flatMap((point) => [
-      point.x,
-      point.y,
-      point.z,
-    ]);
-  
-    // Создаем LineGeometry
-    const lineGeometry = new LineGeometry();
-    lineGeometry.setPositions(positions);
-  
-    // Создаем LineMaterial с толстой линией и глубоким оранжевым цветом
-    const lineMaterial = new LineMaterial({
-      color: 0xFF4500, // Глубокий оранжевый цвет
-      linewidth: 5, // Толщина линии в пикселях
-      dashed: false,
-    });
-  
-    // Устанавливаем разрешение для правильной толщины линии
-    lineMaterial.resolution.set(window.innerWidth, window.innerHeight);
-  
-    // Создаем Line2
-    const pathLine = new Line2(lineGeometry, lineMaterial);
-    pathLine.computeLineDistances(); // Важно для корректного рендера линий
-  
-    // Добавляем линию в axisGroup
-    axisGroupRef.current.add(pathLine);
-  
-    pathLineRef.current = pathLine;
-  };
-  
-
-  const heightMapMeshRef = useRef(null);
+  const pathRef = useRef(null);
 
   useEffect(() => {
     if (!sceneRef.current) return;
   
-    // Если axisGroup уже существует, обновите его, не удаляя
-    // Если нужно всё же пересоздать, будьте уверены в порядке операций
     if (!axisGroupRef.current) {
       const axisGroup = Grid(sceneRef.current, machineDims);
       axisGroupRef.current = axisGroup;
       Lights(sceneRef.current);
       spindleRef.current = Spindle(axisGroupRef.current);
-    } else {
-      // Обновите размеры или другие параметры осей и сетки, если нужно
+  
+      // Привязываем путь к axisGroup
+      pathRef.current = new Path(axisGroupRef.current, 0xFF4500, 5);
     }
   
     if (cameraRef.current) {
       const cameraDistance = Math.max(machineDims.x, machineDims.y) * 1.5;
-      const cameraHeight = machineDims.z * 10; // Увеличим Z для более высокого обзора
-      
-      // Позиционируем камеру так, чтобы она смотрела на центр
-      // Например, (machineDims.x / 2, machineDims.y / 2, cameraHeight)
+      const cameraHeight = machineDims.z * 10;
+  
       cameraRef.current.position.set(0, -70, cameraHeight);
       cameraRef.current.lookAt(0, 0, 0);
     }
+  }, [sceneRef]);
   
-  }, [sceneRef]); // Зависимость только от sceneRef, чтобы не пересоздавать группу при каждом изменении machineDims
-  
-
-
   useEffect(() => {
     if (mPos && spindleRef.current) {
-      const scaledX = mPos.x * scaleFactor;
-      const scaledY = mPos.y * scaleFactor;
-      const scaledZ = 0; // Линия должна быть на сетке, так что Z = 0
+      const scaledX = mPos.x;
+      const scaledY = mPos.y;
+      const planeZ = 0; // Уровень плоскости
   
       // Устанавливаем положение шпинделя
-      spindleRef.current.position.set(scaledX, scaledY, scaledZ);
+      spindleRef.current.position.set(scaledX, scaledY, planeZ);
   
-      if (showPath) {
-        // Добавляем точку пути
-        pathPointsRef.current.push(new THREE.Vector3(scaledX, scaledY, scaledZ));
-        updatePathLine(); // Обновляем линию пути
+      // Добавляем точку пути с фиксацией на плоскости
+      if (showPath && pathRef.current) {
+        pathRef.current.addPoint(new THREE.Vector3(scaledX, scaledY, planeZ), true);
       }
     }
   }, [mPos, showPath]);
-
-  useEffect(() => {
-    if (mPos && spindleRef.current) {
-      const scaledX = mPos.x * scaleFactor;
-      const scaledY = mPos.y * scaleFactor;
-      const scaledZ = mPos.z * scaleFactor;
   
-      // Устанавливаем положение шпинделя
-      spindleRef.current.position.set(scaledX, scaledY, scaledZ);
-  
-      if (showPath) {
-        // Добавляем точку пути
-        pathPointsRef.current.push(new THREE.Vector3(scaledX, scaledY, 0)); // Линия должна быть на сетке, так что Z = 0
-        updatePathLine(); // Обновляем линию пути
-      }
-    }
-  }, [mPos, showPath]);
-
-  useEffect(() => {
-    if (!showPath) {
-      pathPointsRef.current = [];
-      if (pathLineRef.current && sceneRef.current) {
-        sceneRef.current.remove(pathLineRef.current);
-        pathLineRef.current = null;
-      }
-    }
-  }, [showPath]);
   
 
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
-  const handleApplyDimensions = ({x,y,z}) => {
+
+  const handleApplyDimensions = ({ x, y, z }) => {
     setMachineDims({ x, y, z });
     setIsModalOpen(false);
   };
 
-  const handleGetHeightMap = () => {
-    setIsHeightMapModalOpen(true);
-  };
-
   const handleCloseHeightMapModal = () => setIsHeightMapModalOpen(false);
 
-  const handleApplyHeightMap = ({width, height, step}) => {
+  const handleApplyHeightMap = ({ width, height, step }) => {
     if (!axisGroupRef.current) return;
-    
+
     if (heightMapMeshRef.current) {
       axisGroupRef.current.remove(heightMapMeshRef.current);
       heightMapMeshRef.current = null;
@@ -185,8 +97,12 @@ const Visualizer = () => {
 
     const mesh = HeightMapPlane(axisGroupRef.current, width, height, step);
     heightMapMeshRef.current = mesh;
-  
+
     setIsHeightMapModalOpen(false);
+  };
+
+  const handleGetHeightMap = () => {
+    setIsHeightMapModalOpen(true);
   };
 
   return (
@@ -194,13 +110,13 @@ const Visualizer = () => {
       style={{
         outline: isFocused ? '2px solid blue' : 'none',
         ...styles.container,
-        position: 'relative'
+        position: 'relative',
       }}
     >
       <Toolbar
-        onOpenDimensions={handleOpenModal}
-        onGetHeightMap={handleGetHeightMap}
         showPath={showPath}
+        onGetHeightMap={handleGetHeightMap}
+        onOpenDimensions={handleOpenModal}
         setShowPath={setShowPath}
       />
 
