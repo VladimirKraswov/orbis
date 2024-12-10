@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-export function createHeightMapPlane(parentGroup, width, height, step) {
+export const HeightMapPlane = (parentGroup, width, height, step) => {
   const cols = Math.floor(width / step) + 1; 
   const rows = Math.floor(height / step) + 1;
 

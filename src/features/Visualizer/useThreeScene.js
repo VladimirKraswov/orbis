@@ -1,4 +1,3 @@
-// useThreeScene.js
 import { useRef, useEffect } from 'preact/hooks';
 import * as THREE from 'three';
 

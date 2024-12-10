@@ -1,6 +1,6 @@
 // HeightMapModal.js
 import { useState } from 'preact/hooks';
-import { Modal } from '../../../components';
+import { Modal } from '../../../../components';
 
 const stepsOptions = [1, 2, 4, 6, 8, 10, 15, 20, 40, 100];
 

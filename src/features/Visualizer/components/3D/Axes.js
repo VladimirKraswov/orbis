@@ -1,69 +1,38 @@
 import * as THREE from 'three';
-import createLabel from './Label';
+import { Line2 } from 'three/examples/jsm/lines/Line2';
+import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial';
+import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry';
+import { Label } from './Label';
 
-/**
- * Создаёт оси с заданным размером стрелок и линий.
- * @param {number} arrowSize - Размер стрелок (по умолчанию 50).
- * @param {number} lineThickness - Толщина линий осей (по умолчанию 1).
- * @returns {THREE.Group} Группа осей с метками.
- */
-const createAxes = (arrowSize = 50, lineThickness = 0.5) => {
+export const Axes = (arrowSize = 50, lineLength = 25, lineThickness = 10) => {
   const group = new THREE.Group();
 
-  // Создаём геометрию для линий осей
+  // Создаём линии осей
   const createAxisLine = (start, end, color) => {
-    const lineGeometry = new THREE.CylinderGeometry(lineThickness / 2, lineThickness / 2, arrowSize, 16);
-    const lineMaterial = new THREE.MeshBasicMaterial({ color });
-    const lineMesh = new THREE.Mesh(lineGeometry, lineMaterial);
+    const geometry = new LineGeometry();
+    geometry.setPositions([start.x, start.y, start.z, end.x, end.y, end.z]);
 
-    const midPoint = start.clone().lerp(end, 0.5); // Вычисляем середину линии
-    lineMesh.position.copy(midPoint);
+    const material = new LineMaterial({
+      color,
+      linewidth: lineThickness,
+    });
 
-    // Определяем направление линии
-    const axis = new THREE.Vector3().subVectors(end, start).normalize();
-    const quaternion = new THREE.Quaternion();
-    quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), axis);
+    material.resolution.set(window.innerWidth, window.innerHeight);
 
-    lineMesh.quaternion.copy(quaternion);
-    lineMesh.scale.set(1, arrowSize, 1);
-
-    return lineMesh;
+    return new Line2(geometry, material);
   };
 
-  // Создаём линии осей
-  const xLine = createAxisLine(new THREE.Vector3(0, 0, 0), new THREE.Vector3(arrowSize, 0, 0), 0xff0000);
-  const yLine = createAxisLine(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, arrowSize, 0), 0x00ff00);
-  const zLine = createAxisLine(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, arrowSize), 0x0000ff);
+  const xLine = createAxisLine(new THREE.Vector3(0, 0, 0), new THREE.Vector3(lineLength, 0, 0), 0xff0000);
+  const yLine = createAxisLine(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, lineLength, 0), 0x00ff00);
+  const zLine = createAxisLine(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, lineLength), 0x0000ff);
 
-  // Создаём стрелки осей
-  const xAxis = new THREE.ArrowHelper(
-    new THREE.Vector3(1, 0, 0),
-    new THREE.Vector3(0, 0, 0),
-    arrowSize,
-    0xff0000
-  );
-  const yAxis = new THREE.ArrowHelper(
-    new THREE.Vector3(0, 1, 0),
-    new THREE.Vector3(0, 0, 0),
-    arrowSize,
-    0x00ff00
-  );
-  const zAxis = new THREE.ArrowHelper(
-    new THREE.Vector3(0, 0, 1),
-    new THREE.Vector3(0, 0, 0),
-    arrowSize,
-    0x0000ff
-  );
-
-  // Создаём метки для осей
-  const xLabel = createLabel('X', new THREE.Vector3(arrowSize + 5, 0, 0), 'red');
-  const yLabel = createLabel('Y', new THREE.Vector3(0, arrowSize + 5, 0), 'green');
-  const zLabel = createLabel('Z', new THREE.Vector3(0, 0, arrowSize + 5), 'blue');
+  // Создаём метки для осей с настройкой размера шрифта и толщины
+  const xLabel = Label('X', new THREE.Vector3(lineLength + 2, 0, 0), 'red', 256, 'bold');
+  const yLabel = Label('Y', new THREE.Vector3(0, lineLength + 2, 0), 'green', 256, 'bold');
+  const zLabel = Label('Z', new THREE.Vector3(0, 0, lineLength + 2), 'blue', 256, 'bold');
 
   // Добавляем всё в группу
-  group.add(xLine, yLine, zLine, xAxis, yAxis, zAxis, xLabel, yLabel, zLabel);
+  group.add(xLine, yLine, zLine, xLabel, yLabel, zLabel);
 
   return group;
 };
-
-export default createAxes;

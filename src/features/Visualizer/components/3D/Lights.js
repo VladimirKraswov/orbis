@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-export function createLights(scene) {
+export const Lights = (scene) => {
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
   scene.add(ambientLight);
 

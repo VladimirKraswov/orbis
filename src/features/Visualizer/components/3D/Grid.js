@@ -1,8 +1,8 @@
 import * as THREE from 'three';
-import Ruler from './Ruler';
-import createAxes from './Axes';
+import { Ruler } from './Ruler';
+import { Axes } from './Axes';
 
-export function createGrid(scene, dims) {
+export const Grid = (scene, dims) => {
   const group = new THREE.Group();
 
   const sizeX = dims.x * 2; 
@@ -20,7 +20,7 @@ export function createGrid(scene, dims) {
   group.add(gridHelper);
 
   // Создаем оси
-  const axesGroup = createAxes();
+  const axesGroup = Axes();
   // Добавим оси в группу
   group.add(axesGroup);
 
@@ -29,7 +29,7 @@ export function createGrid(scene, dims) {
   const rulerY = Ruler('y', gridSize, gridDivisions);
   const rulerZ = Ruler('z', gridSize, gridDivisions);
   // Добавим линейки в группу
-  group.add(rulerX, rulerY, rulerZ);
+  // group.add(rulerX, rulerY, rulerZ);
 
   // Добавим группу в сцену
   scene.add(group);

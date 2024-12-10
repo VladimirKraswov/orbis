@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-export function createSpindle(axisGroup) {
+export function Spindle(axisGroup) {
   const spindleGroup = new THREE.Group();
 
   // Параметры шпенделя

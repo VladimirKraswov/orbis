@@ -6,15 +6,15 @@ import useThreeScene from './useThreeScene';
 import useMachineStatus from '../../hooks/useMachineStatus';
 import { styles } from './styles';
 import Toolbar from './components/Toolbar';
-import DimensionsModal from './components/DimensionsModal';
-import HeightMapModal from './components/HeightMapModal';
-import { createGrid } from './components/3D/Grid';
-import { createLights } from './components/3D/Lights';
-import { createSpindle } from './components/3D/Spindle';
-import { createHeightMapPlane } from './components/3D/HeightMapP';
+import { Grid } from './components/3D/Grid';
+import { Lights } from './components/3D/Lights';
+import { Spindle } from './components/3D/Spindle';
+import { HeightMapPlane } from './components/3D/HeightMapP';
 import { Line2 } from 'three/examples/jsm/lines/Line2';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry';
+import DimensionsModal from './components/Modals/DimensionsModal';
+import HeightMapModal from './components/Modals/HeightMapModal';
 
 
 const Visualizer = () => {
@@ -93,10 +93,10 @@ const Visualizer = () => {
     // Если axisGroup уже существует, обновите его, не удаляя
     // Если нужно всё же пересоздать, будьте уверены в порядке операций
     if (!axisGroupRef.current) {
-      const axisGroup = createGrid(sceneRef.current, machineDims);
+      const axisGroup = Grid(sceneRef.current, machineDims);
       axisGroupRef.current = axisGroup;
-      createLights(sceneRef.current);
-      spindleRef.current = createSpindle(axisGroupRef.current);
+      Lights(sceneRef.current);
+      spindleRef.current = Spindle(axisGroupRef.current);
     } else {
       // Обновите размеры или другие параметры осей и сетки, если нужно
     }
@@ -181,7 +181,7 @@ const Visualizer = () => {
       heightMapMeshRef.current = null;
     }
 
-    const mesh = createHeightMapPlane(axisGroupRef.current, width, height, step);
+    const mesh = HeightMapPlane(axisGroupRef.current, width, height, step);
     heightMapMeshRef.current = mesh;
   
     setIsHeightMapModalOpen(false);
@@ -202,8 +202,8 @@ const Visualizer = () => {
         setShowPath={setShowPath}
       />
 
-
       <div ref={mountRef} style={styles.content} />
+      
       <DimensionsModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}

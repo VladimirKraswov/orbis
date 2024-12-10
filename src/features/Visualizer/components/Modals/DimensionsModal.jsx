@@ -1,5 +1,5 @@
 import { useState } from 'preact/hooks';
-import { Modal } from '../../../components';
+import { Modal } from '../../../../components';
 
 const inputStyle = { width: '60px', marginRight: '10px' };
 

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import createLabel from './Label';
+import { Label } from './Label';
 
-const Ruler = (axis, length, divisions) => {
+export const Ruler = (axis, length, divisions) => {
   const group = new THREE.Group();
   const step = length / divisions;
 
@@ -11,21 +11,28 @@ const Ruler = (axis, length, divisions) => {
     const lineEnd = new THREE.Vector3();
 
     if (axis === 'x') {
-      labelPosition.set(i, length / 2 + 1, 0);
-      lineStart.set(i, length / 2 + 1.2, 0);
-      lineEnd.set(i, length / 2 + 0.8, 0);
+      // Линейка вдоль оси X
+      labelPosition.set(i, 0, length / 2 + 1);
+      lineStart.set(i, 0, length / 2 + 1.2);
+      lineEnd.set(i, 0, length / 2 + 0.8);
     } else if (axis === 'z') {
+      // Линейка вдоль оси Z
+      labelPosition.set(0, 0, i);
+      lineStart.set(0, 0, i + 0.2);
+      lineEnd.set(0, 0, i - 0.2);
+    } else if (axis === 'y') {
+      // Линейка вдоль оси Y
       labelPosition.set(0, i, length / 2 + 1);
       lineStart.set(0, i, length / 2 + 1.2);
       lineEnd.set(0, i, length / 2 + 0.8);
-    } else if (axis === 'y') {
-      labelPosition.set(length / 2 + 1, 0, i);
-      lineStart.set(length / 2 + 1.2, 0, i);
-      lineEnd.set(length / 2 + 0.8, 0, i);
     }
 
     if (Math.abs(i) % (divisions / 10) === 0) {
-      const label = createLabel(`${Math.round(i)}`, labelPosition, axis === 'x' ? 'red' : axis === 'z' ? 'green' : 'blue');
+      const label = Label(
+        `${Math.round(i)}`,
+        labelPosition,
+        axis === 'x' ? 'red' : axis === 'z' ? 'green' : 'blue'
+      );
       group.add(label);
     }
 
@@ -39,5 +46,3 @@ const Ruler = (axis, length, divisions) => {
 
   return group;
 };
-
-export default Ruler;
