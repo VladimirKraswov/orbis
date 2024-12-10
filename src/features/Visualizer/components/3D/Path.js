@@ -20,7 +20,7 @@ export class Path {
         new THREE.Vector3(
           THREE.MathUtils.lerp(p1.x, p2.x, t), // X
           THREE.MathUtils.lerp(p1.y, p2.y, t), // Y
-          0 // Z = 0 для фиксации на плоскости
+          THREE.MathUtils.lerp(p1.z, p2.z, t), // Y
         )
       );
     }
@@ -29,7 +29,7 @@ export class Path {
 
   addPoint(point, interpolate = true) {
     // Принудительно фиксируем Z = 0
-    const fixedPoint = new THREE.Vector3(point.x, point.y, 0);
+    const fixedPoint = new THREE.Vector3(point.x, point.y, point.z);
     if (interpolate && this.points.length > 0) {
       const lastPoint = this.points[this.points.length - 1];
       this.points.push(...this.interpolatePoints(lastPoint, fixedPoint));

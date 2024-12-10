@@ -12,6 +12,7 @@ import { HeightMapPlane } from './components/3D/HeightMapP';
 import DimensionsModal from './components/Modals/DimensionsModal';
 import HeightMapModal from './components/Modals/HeightMapModal';
 import { Path } from './components/3D/Path';
+import { useSendGCode } from './hooks/useSendGCode';
 
 const Visualizer = () => {
   const heightMapMeshRef = useRef(null);
@@ -22,7 +23,9 @@ const Visualizer = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isHeightMapModalOpen, setIsHeightMapModalOpen] = useState(false);
   const [machineDims, setMachineDims] = useState({ x: 100, y: 100, z: 10 });
+  const [gcode, setGCode] = useState('');
 
+  const { sendGCode, isSending } = useSendGCode();
   const { mPos } = useMachineStatus();
   const { mountRef, sceneRef, axisGroupRef, cameraRef } = useThreeScene({
     rotation,
@@ -39,31 +42,31 @@ const Visualizer = () => {
 
   useEffect(() => {
     if (!sceneRef.current) return;
-  
+
     if (!axisGroupRef.current) {
       const axisGroup = Grid(sceneRef.current, machineDims);
       axisGroupRef.current = axisGroup;
       Lights(sceneRef.current);
       spindleRef.current = Spindle(axisGroupRef.current);
-  
+
       // Привязываем путь к axisGroup
       pathRef.current = new Path(axisGroupRef.current, 0xFF4500, 5);
     }
-  
+
     if (cameraRef.current) {
       const cameraDistance = Math.max(machineDims.x, machineDims.y) * 1.5;
       const cameraHeight = machineDims.z * 10;
-  
+
       cameraRef.current.position.set(0, -70, cameraHeight);
       cameraRef.current.lookAt(0, 0, 0);
     }
   }, [sceneRef]);
-  
+
   useEffect(() => {
     if (mPos && spindleRef.current) {
       const scaledX = mPos.x;
       const scaledY = mPos.y;
-      const planeZ = 0; // Уровень плоскости
+      const planeZ = 0.5; // Уровень плоскости
   
       // Устанавливаем положение шпинделя
       spindleRef.current.position.set(scaledX, scaledY, planeZ);
@@ -104,6 +107,13 @@ const Visualizer = () => {
   const handleGetHeightMap = () => {
     setIsHeightMapModalOpen(true);
   };
+  
+  const handleLoadGCode = async (loadedGCode) => {
+    console.log('G-code loaded:', loadedGCode);
+    
+    setGCode(loadedGCode); // Загружаем G-code
+    sendGCode(loadedGCode);
+  };
 
   return (
     <div
@@ -117,6 +127,7 @@ const Visualizer = () => {
         showPath={showPath}
         onGetHeightMap={handleGetHeightMap}
         onOpenDimensions={handleOpenModal}
+        onLoadGCode={handleLoadGCode}
         setShowPath={setShowPath}
       />
 
