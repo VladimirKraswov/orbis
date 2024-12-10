@@ -1,11 +1,13 @@
+// Visualizer.js
 import { useState, useEffect, useRef } from 'preact/hooks';
 import PropTypes from 'prop-types';
 import useThreeScene from './useThreeScene';
-import { createAxisHelpers, createLights, createSpindle } from './helpers';
+import { createAxisHelpers, createHeightMapPlane, createLights, createSpindle } from './helpers';
 import useMachineStatus from '../../hooks/useMachineStatus';
 import { styles } from './styles';
 import Toolbar from './components/Toolbar';
 import DimensionsModal from './components/DimensionsModal';
+import HeightMapModal from './components/HeightMapModal';
 
 const Visualizer = () => {
   const [isFocused, setIsFocused] = useState(false);
@@ -13,6 +15,8 @@ const Visualizer = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isHeightMapModalOpen, setIsHeightMapModalOpen] = useState(false);
+
   const [machineDims, setMachineDims] = useState({ x: 100, y: 100, z: 10 });
 
   const { mPos } = useMachineStatus();
@@ -29,24 +33,34 @@ const Visualizer = () => {
   const spindleRef = useRef(null);
   const scaleFactor = 0.1;
 
+  const heightMapMeshRef = useRef(null);
+
   useEffect(() => {
     if (!sceneRef.current) return;
-    if (axisGroupRef.current) {
-      sceneRef.current.remove(axisGroupRef.current);
-      axisGroupRef.current = null;
+  
+    // Если axisGroup уже существует, обновите его, не удаляя
+    // Если нужно всё же пересоздать, будьте уверены в порядке операций
+    if (!axisGroupRef.current) {
+      const axisGroup = createAxisHelpers(sceneRef.current, machineDims);
+      axisGroupRef.current = axisGroup;
+      createLights(sceneRef.current);
+      spindleRef.current = createSpindle(axisGroupRef.current);
+    } else {
+      // Обновите размеры или другие параметры осей и сетки, если нужно
     }
-
-    const axisGroup = createAxisHelpers(sceneRef.current, machineDims); 
-    axisGroupRef.current = axisGroup;
-    createLights(sceneRef.current);
-    spindleRef.current = createSpindle(axisGroup);
-
+  
     if (cameraRef.current) {
-      cameraRef.current.position.set(machineDims.x, machineDims.y, machineDims.x);
-      cameraRef.current.lookAt(machineDims.x / 2, machineDims.y / 2, machineDims.z / 2);
+      const cameraDistance = Math.max(machineDims.x, machineDims.y) * 1.5;
+      const cameraHeight = machineDims.z * 10; // Увеличим Z для более высокого обзора
+      
+      // Позиционируем камеру так, чтобы она смотрела на центр
+      // Например, (machineDims.x / 2, machineDims.y / 2, cameraHeight)
+      cameraRef.current.position.set(0, -70, cameraHeight);
+      cameraRef.current.lookAt(0, 0, 0);
     }
-
-  }, [sceneRef, machineDims]); 
+  
+  }, [sceneRef]); // Зависимость только от sceneRef, чтобы не пересоздавать группу при каждом изменении machineDims
+  
 
   useEffect(() => {
     if (mPos && spindleRef.current) {
@@ -66,7 +80,23 @@ const Visualizer = () => {
   };
 
   const handleGetHeightMap = () => {
-    console.log("Получаем карту высот...");
+    setIsHeightMapModalOpen(true);
+  };
+
+  const handleCloseHeightMapModal = () => setIsHeightMapModalOpen(false);
+
+  const handleApplyHeightMap = ({width, height, step}) => {
+    if (!axisGroupRef.current) return;
+    
+    if (heightMapMeshRef.current) {
+      axisGroupRef.current.remove(heightMapMeshRef.current);
+      heightMapMeshRef.current = null;
+    }
+
+    const mesh = createHeightMapPlane(axisGroupRef.current, width, height, step);
+    heightMapMeshRef.current = mesh;
+  
+    setIsHeightMapModalOpen(false);
   };
 
   return (
@@ -89,6 +119,11 @@ const Visualizer = () => {
         defaultY={machineDims.y}
         defaultZ={machineDims.z}
         onApply={handleApplyDimensions}
+      />
+      <HeightMapModal
+        isOpen={isHeightMapModalOpen}
+        onClose={handleCloseHeightMapModal}
+        onApply={handleApplyHeightMap}
       />
     </div>
   );

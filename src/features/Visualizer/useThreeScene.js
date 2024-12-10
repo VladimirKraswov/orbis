@@ -29,9 +29,11 @@ export default function useThreeScene({
     isFocusedRef.current = isFocused;
   }, [isFocused]);
 
-  // Инициализация сцены, камеры, рендера – один раз при монтировании
   useEffect(() => {
     const scene = new THREE.Scene();
+
+    // Задаём Z вверх для всей сцены
+    scene.up.set(0, 0, 1);
 
     const camera = new THREE.PerspectiveCamera(
       45,
@@ -39,14 +41,15 @@ export default function useThreeScene({
       0.1,
       1000
     );
-    camera.position.set(30, 30, 30);
-    camera.lookAt(new THREE.Vector3(0, 0, 0));
+    // Установим камеру прямо над точкой (0,0,0), чтобы сразу увидеть разницу.
+    // Поставим её в (0,0,100) и пусть смотрит прямо вниз на (0,0,0).
+    camera.position.set(0, 0, 100);
+    camera.lookAt(0, 0, 0);
 
     const renderer = new THREE.WebGLRenderer(graphicsSettings);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
 
-    // Улучшение качества картинки
     // @ts-ignore
     renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -83,10 +86,8 @@ export default function useThreeScene({
         mountRef.current.removeChild(renderer.domElement);
       }
     };
-    // Пустой массив зависимостей гарантирует, что инициализация будет один раз
   }, []);
 
-  // Обработчики ввода мыши и клавиатуры
   useEffect(() => {
     const controls = controlsRef.current;
 
@@ -104,7 +105,7 @@ export default function useThreeScene({
         const deltaY = event.clientY - controls.prevY;
 
         if (controls.isShiftPressed) {
-          axisGroupRef.current.rotation.y += deltaX * 0.01;
+          axisGroupRef.current.rotation.z += deltaX * 0.01;
           axisGroupRef.current.rotation.x += deltaY * 0.01;
         } else {
           axisGroupRef.current.position.x += deltaX * 0.05;
@@ -164,7 +165,6 @@ export default function useThreeScene({
     };
   }, [setIsFocused, setRotation, setPosition]);
 
-  // Обновление rotation и position без пересоздания сцены
   useEffect(() => {
     if (axisGroupRef.current) {
       axisGroupRef.current.rotation.x = rotation.x;
