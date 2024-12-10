@@ -1,7 +1,7 @@
 import { h } from 'preact';
 import Router, { Route } from 'preact-router';
 import { HomePage, NotFoundPage } from '../pages';
-import { WebSocketProvider } from '../api/WebSocketContext';
+import { WebSocketProvider } from '../providers/WebSocketContext';
 
 
 const AppRoutes = () => (

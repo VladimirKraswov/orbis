@@ -2,8 +2,7 @@ export const styles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
-    minHeight: '512px',
-    maxHeight: '400px',
+    height: '50vh',
   },
   content: {
     flex: 1,

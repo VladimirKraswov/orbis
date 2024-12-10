@@ -10,23 +10,23 @@ const styles = {
     borderBottom: '1px solid #444',
     display: 'flex',
     alignItems: 'center',
-    color: '#ffffff', // Светлый текст
+    color: '#ffffff',
   },
   label: {
     marginRight: '16px',
     display: 'flex',
     alignItems: 'center',
-    color: '#ffffff', // Белый текст
+    color: '#ffffff',
   },
   checkbox: {
     marginRight: '4px',
-    accentColor: '#ffffff', // Светлый синий
+    accentColor: '#ffffff',
   },
   clearButton: {
     marginLeft: 'auto',
     padding: '4px 8px',
     background: '#444',
-    color: '#ffffff', // Светлый текст
+    color: '#ffffff',
     border: '1px solid #555',
     borderRadius: '4px',
     cursor: 'pointer',
@@ -35,7 +35,7 @@ const styles = {
     flex: 1,
     overflowY: 'auto',
     padding: '8px',
-    background: '#1e1e1e', // Темный фон
+    background: '#1e1e1e',
     color: '#ffffff',
     borderBottom: '1px solid #444',
     fontFamily: 'monospace',

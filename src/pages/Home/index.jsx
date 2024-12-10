@@ -1,7 +1,7 @@
 import { useState } from 'preact/hooks';
 import { styles } from './styles';
 import { Block } from '../../components';
-import { CommandConsole, ControlPanel, GridView, SdFiles, Sender } from '../../features';
+import { CommandConsole, ControlPanel, Visualizer, SdFiles, Sender, Reports } from '../../features';
 
 const HomePage = () => {
   const [logMessages, setLogMessages] = useState([]);
@@ -17,9 +17,9 @@ const HomePage = () => {
           />
         </Block>
 
-        <Block title="3D View">
+        <Block title="3D Visualizer">
           <div style={styles.blockContentCentered}>
-            <GridView />
+            <Visualizer />
           </div>
         </Block>
 
@@ -28,11 +28,7 @@ const HomePage = () => {
         </Block>
 
         <Block title="GRBL Reports">
-          {logMessages.map((log, index) => (
-            <div key={index} style={styles.logItem}>
-              {log}
-            </div>
-          ))}
+          <Reports />
         </Block>
 
         <Block title="SD Files">

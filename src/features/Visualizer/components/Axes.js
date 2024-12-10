@@ -1,7 +1,6 @@
 import * as THREE from 'three';
-import createLabel from './createLabel';
-
-const AxesGroup = () => {
+import createLabel from './Label';
+const Axes = () => {
   const group = new THREE.Group();
 
   const arrowSize = 5;
@@ -18,4 +17,4 @@ const AxesGroup = () => {
   return group;
 };
 
-export default AxesGroup;
+export default Axes;

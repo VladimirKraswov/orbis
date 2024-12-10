@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import createLabel from './createLabel';
+import createLabel from './Label';
 
 const Ruler = (axis, length, divisions) => {
   const group = new THREE.Group();
