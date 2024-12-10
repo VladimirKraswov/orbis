@@ -2,12 +2,15 @@
 import { useState, useEffect, useRef } from 'preact/hooks';
 import PropTypes from 'prop-types';
 import useThreeScene from './useThreeScene';
-import { createAxisHelpers, createHeightMapPlane, createLights, createSpindle } from './helpers';
 import useMachineStatus from '../../hooks/useMachineStatus';
 import { styles } from './styles';
 import Toolbar from './components/Toolbar';
 import DimensionsModal from './components/DimensionsModal';
 import HeightMapModal from './components/HeightMapModal';
+import { createGrid } from './components/3D/Grid';
+import { createLights } from './components/3D/Lights';
+import { createSpindle } from './components/3D/Spindle';
+import { createHeightMapPlane } from './components/3D/HeightMapP';
 
 const Visualizer = () => {
   const [isFocused, setIsFocused] = useState(false);
@@ -41,7 +44,7 @@ const Visualizer = () => {
     // Если axisGroup уже существует, обновите его, не удаляя
     // Если нужно всё же пересоздать, будьте уверены в порядке операций
     if (!axisGroupRef.current) {
-      const axisGroup = createAxisHelpers(sceneRef.current, machineDims);
+      const axisGroup = createGrid(sceneRef.current, machineDims);
       axisGroupRef.current = axisGroup;
       createLights(sceneRef.current);
       spindleRef.current = createSpindle(axisGroupRef.current);
