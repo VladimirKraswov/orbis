@@ -64,9 +64,9 @@ const Visualizer = () => {
 
   useEffect(() => {
     if (mPos && spindleRef.current) {
-      const scaledX = mPos.x * scaleFactor;
-      const scaledY = mPos.y * scaleFactor;
-      const scaledZ = mPos.z * scaleFactor;
+      const scaledX = mPos.x;
+      const scaledY = mPos.y;
+      const scaledZ = mPos.z;
       
       spindleRef.current.position.set(scaledX, scaledY, scaledZ);
     }
