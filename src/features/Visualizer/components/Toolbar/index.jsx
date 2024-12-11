@@ -1,33 +1,46 @@
-import { useRef } from "preact/hooks";
-import { IconButton } from "../../../../components";
+import { useRef, useState } from "preact/hooks";
+import PropTypes from "prop-types";
+import { Checkbox, IconButton } from "../../../../components";
+import Modal from "../../../../components/Modal";
 import { styles } from "./styles";
+import { useSettings } from "../../../../providers/Settings";
 
-const Toolbar = ({ onOpenDimensions, onLoadGCode, onGetHeightMap, showPath, setShowPath }) => {
+const Toolbar = ({ onOpenDimensions, onLoadGCode, onGetHeightMap }) => {
   const fileInputRef = useRef(null);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const { settings, updateSetting } = useSettings();
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
-      console.log("Файл выбран:", file.name); // Отладочное сообщение
+      console.log("Файл выбран:", file.name);
       try {
         const content = await file.text();
-        console.log("Файл загружен, содержимое:", content.slice(0, 100)); // Вывод первых 100 символов
+        console.log("Файл загружен, содержимое:", content.slice(0, 100));
         onLoadGCode(content);
       } catch (error) {
-        console.error("Ошибка при чтении файла:", error); // Отладочное сообщение
+        console.error("Ошибка при чтении файла:", error);
       }
     } else {
-      console.error("Файл не выбран"); // Отладочное сообщение
+      console.error("Файл не выбран");
     }
   };
 
   const triggerFileInput = () => {
     if (fileInputRef.current) {
-      console.log("Имитируем клик по input"); // Отладочное сообщение
+      console.log("Имитируем клик по input");
       fileInputRef.current.click();
     } else {
-      console.error("fileInputRef не инициализирован"); // Отладочное сообщение
+      console.error("fileInputRef не инициализирован");
     }
+  };
+
+  const openSettingsModal = () => {
+    setIsSettingsModalOpen(true);
+  };
+
+  const closeSettingsModal = () => {
+    setIsSettingsModalOpen(false);
   };
 
   return (
@@ -47,26 +60,41 @@ const Toolbar = ({ onOpenDimensions, onLoadGCode, onGetHeightMap, showPath, setS
         tooltip="Загрузить G-код"
         onClick={triggerFileInput}
       />
+      <IconButton
+        icon="🔧"
+        tooltip="Настройки"
+        onClick={openSettingsModal}
+      />
       <input
         type="file"
         accept=".gcode,.txt,.nc"
-        style={{ display: 'none' }}
+        style={{ display: "none" }}
         ref={fileInputRef}
         onChange={handleFileChange}
       />
-      <div style={{ margin: '10px', display: 'flex', alignItems: 'center' }}>
-        <label style={{ color: 'white', marginRight: '5px' }}>Контур движения:</label>
-        <input
-          type="checkbox"
-          checked={showPath}
-          onChange={(e) => {
-            // @ts-ignore
-            setShowPath(e.target.checked);
-          }}
-        />
-      </div>
+
+      <Modal isOpen={isSettingsModalOpen} onClose={closeSettingsModal}>
+        <div style={{ padding: "20px" }}>
+          <Checkbox
+            label="Показать контур движения"
+            checked={settings.showPath}
+            onChange={(value) => updateSetting("showPath", value)}
+          />
+          <Checkbox
+            label="Учитывать ось Z"
+            checked={settings.considerZ}
+            onChange={(value) => updateSetting("considerZ", value)}
+          />
+        </div>
+      </Modal>
     </div>
   );
+};
+
+Toolbar.propTypes = {
+  onOpenDimensions: PropTypes.func.isRequired,
+  onLoadGCode: PropTypes.func.isRequired,
+  onGetHeightMap: PropTypes.func.isRequired,
 };
 
 export default Toolbar;

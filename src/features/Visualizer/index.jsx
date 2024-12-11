@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { useState, useEffect, useRef } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import PropTypes from 'prop-types';
 import useThreeScene from './useThreeScene';
 import useMachineStatus from '../../hooks/useMachineStatus';
@@ -13,18 +13,19 @@ import DimensionsModal from './components/Modals/DimensionsModal';
 import HeightMapModal from './components/Modals/HeightMapModal';
 import { Path } from './components/3D/Path';
 import { useSendGCode } from './hooks/useSendGCode';
+import { useSettings } from '../../providers/Settings';
 
 const Visualizer = () => {
   const heightMapMeshRef = useRef(null);
   const [isFocused, setIsFocused] = useState(false);
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [showPath, setShowPath] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isHeightMapModalOpen, setIsHeightMapModalOpen] = useState(false);
   const [machineDims, setMachineDims] = useState({ x: 100, y: 100, z: 10 });
   const [gcode, setGCode] = useState('');
 
+  const { settings } = useSettings(); // Используем настройки из контекста
   const { sendGCode, isSending } = useSendGCode();
   const { mPos } = useMachineStatus();
   const { mountRef, sceneRef, axisGroupRef, cameraRef } = useThreeScene({
@@ -64,21 +65,15 @@ const Visualizer = () => {
 
   useEffect(() => {
     if (mPos && spindleRef.current) {
-      const scaledX = mPos.x;
-      const scaledY = mPos.y;
-      const planeZ = 0.5; // Уровень плоскости
-  
       // Устанавливаем положение шпинделя
-      spindleRef.current.position.set(scaledX, scaledY, planeZ);
-  
+      spindleRef.current.position.set(mPos.x, mPos.y, mPos.z);
+
       // Добавляем точку пути с фиксацией на плоскости
-      if (showPath && pathRef.current) {
-        pathRef.current.addPoint(new THREE.Vector3(scaledX, scaledY, planeZ), true);
+      if (settings.showPath && pathRef.current) {
+        pathRef.current.addPoint(new THREE.Vector3(mPos.x, mPos.y, settings.considerZ ? mPos.z : 0), true);
       }
     }
-  }, [mPos, showPath]);
-  
-  
+  }, [mPos, settings]);
 
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
@@ -107,10 +102,10 @@ const Visualizer = () => {
   const handleGetHeightMap = () => {
     setIsHeightMapModalOpen(true);
   };
-  
+
   const handleLoadGCode = async (loadedGCode) => {
     console.log('G-code loaded:', loadedGCode);
-    
+
     setGCode(loadedGCode); // Загружаем G-code
     sendGCode(loadedGCode);
   };
@@ -124,11 +119,9 @@ const Visualizer = () => {
       }}
     >
       <Toolbar
-        showPath={showPath}
         onGetHeightMap={handleGetHeightMap}
         onOpenDimensions={handleOpenModal}
         onLoadGCode={handleLoadGCode}
-        setShowPath={setShowPath}
       />
 
       <div ref={mountRef} style={styles.content} />
