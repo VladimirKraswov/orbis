@@ -66,7 +66,7 @@ const ControlPanel = () => {
   const positions = [
     {
       label: "Xw",
-      value: wPos?.x.toFixed(3) ?? '990.000',
+      value: wPos?.x.toFixed(3) ?? '0.000',
       subPosition: {
         label: "Xm",
         value: mPos?.x.toFixed(3) ?? '0.000',
@@ -74,7 +74,7 @@ const ControlPanel = () => {
     },
     {
       label: "Yw",
-      value: wPos?.y.toFixed(3) ?? '990.000',
+      value: wPos?.y.toFixed(3) ?? '0.000',
       subPosition: {
         label: "Ym",
         value: mPos?.y.toFixed(3) ?? '0.000',
@@ -82,7 +82,7 @@ const ControlPanel = () => {
     },
     {
       label: "Zw",
-      value: wPos?.z.toFixed(3) ?? '990.000',
+      value: wPos?.z.toFixed(3) ?? '0.000',
       subPosition: {
         label: "Zm",
         value: mPos?.z.toFixed(3) ?? '0.000',
