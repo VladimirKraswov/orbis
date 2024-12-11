@@ -3,7 +3,7 @@ import { styles } from "./styles";
 
 const CustomInput = ({ label, unit, id, min, value, onChange }) => {
   return (
-    <div style={styles.inputGroup}>
+    <div style={styles.container}>
       <label style={styles.formControlLabel} htmlFor={id}>
         {label}
       </label>
@@ -16,7 +16,6 @@ const CustomInput = ({ label, unit, id, min, value, onChange }) => {
         // @ts-ignore
         onChange={(e) => onChange(e.target.value)}
       />
-      <span style={styles.inputLabelUnit}>{unit}</span>
     </div>
   );
 };

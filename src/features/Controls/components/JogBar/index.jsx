@@ -1,40 +1,4 @@
-const styles = {
-  jogBar: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    backgroundColor: "#1a1a1a",
-    padding: "10px",
-    width: "50px",
-    borderRadius: "5px",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-  },
-  jogBarButtons: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "5px",
-  },
-  jogButton: {
-    backgroundColor: "#3e4e5e",
-    color: "#ffffff",
-    border: "none",
-    borderRadius: "3px",
-    padding: "8px",
-    fontSize: "14px",
-    cursor: "pointer",
-    transition: "background-color 0.2s, transform 0.2s",
-  },
-  jogButtonHover: {
-    backgroundColor: "#5a6a7a",
-    transform: "scale(1.05)",
-  },
-  jogDivider: {
-    width: "100%",
-    height: "2px",
-    backgroundColor: "#ffffff",
-    margin: "10px 0",
-  },
-};
+import { styles } from "./styles";
 
 export const JogBar = ({ onCommand }) => {
   const handleCommand = (command) => {
@@ -47,22 +11,24 @@ export const JogBar = ({ onCommand }) => {
       <div style={styles.jogBarButtons}>
         <button
           style={styles.jogButton}
-
           onClick={() => handleCommand("Jog Z+ 10")}
+          title="Move Z axis +10"
         >
-          +10
+          <div style={{ ...styles.jogButtonInner, ...styles.jogButtonZPlus10 }}>+10</div>
         </button>
         <button
           style={styles.jogButton}
           onClick={() => handleCommand("Jog Z+ 1")}
+          title="Move Z axis +1"
         >
-          +1
+          <div style={{ ...styles.jogButtonInner, ...styles.jogButtonZPlus1 }}>+1</div>
         </button>
         <button
           style={styles.jogButton}
           onClick={() => handleCommand("Jog Z+ 0.1")}
+          title="Move Z axis +0.1"
         >
-          +0.1
+          <div style={{ ...styles.jogButtonInner, ...styles.jogButtonZPlus01 }}>+0.1</div>
         </button>
       </div>
 
@@ -74,20 +40,23 @@ export const JogBar = ({ onCommand }) => {
         <button
           style={styles.jogButton}
           onClick={() => handleCommand("Jog Z- 0.1")}
+          title="Move Z axis -0.1"
         >
-          -0.1
+          <div style={{ ...styles.jogButtonInner, ...styles.jogButtonZMinus01 }}>-0.1</div>
         </button>
         <button
           style={styles.jogButton}
           onClick={() => handleCommand("Jog Z- 1")}
+          title="Move Z axis -1"
         >
-          -1
+          <div style={{ ...styles.jogButtonInner, ...styles.jogButtonZMinus1 }}>-1</div>
         </button>
         <button
           style={styles.jogButton}
           onClick={() => handleCommand("Jog Z- 10")}
+          title="Move Z axis -10"
         >
-          -10
+          <div style={{ ...styles.jogButtonInner, ...styles.jogButtonZMinus10 }}>-10</div>
         </button>
       </div>
     </div>

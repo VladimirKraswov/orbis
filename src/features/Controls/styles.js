@@ -1,27 +1,17 @@
 export const styles = {
   controlPanel: {
     display: "flex",
-    flexDirection: "row",
+    flexDirection: "column",
   },
-  jogUIContainer: {
+  jogContainer: {
     display: "flex",
-    justifyContent: "center",
+    justifyContent: "space-between",
   },
-  jogBarUI: {},
-  flexContainer: {
-    flex: 1,
-  },
-  zeroButton: {
-    marginTop: "10px",
-    padding: "5px 10px",
-    background: "linear-gradient(145deg, var(--color-gradient-start), var(--color-gradient-end))",
-    border: "1px solid var(--color-border)",
-    borderRadius: "10px",
-    color: "var(--color-text)",
-    fontSize: "14px",
-    fontWeight: "600",
-    cursor: "pointer",
+  jog: {
+    display: "flex",
+    borderRadius: "8px",
+    flexDirection: "row",
     boxShadow: "5px 5px 10px var(--color-shadow-primary), -5px -5px 10px var(--color-shadow-secondary)",
-    transition: "all 0.3s ease",
+    padding: "15px",
   },
 };

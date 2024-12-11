@@ -9,6 +9,12 @@ export const styles = {
     borderRadius: "8px",
     boxShadow: "5px 5px 10px var(--color-shadow-primary), -5px -5px 10px var(--color-shadow-secondary)",
     color: "var(--color-text)",
-    width: "300px",
+    width: "200px",
+    height: 120,
+  },
+  inputLabelUnit: {
+    fontWeight: "600",
+    fontSize: "14px",
+    color: "var(--color-text)",
   },
 };

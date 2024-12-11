@@ -5,11 +5,13 @@ import { VelocityControls } from "./components/VelocityControls";
 import { sendHttpCommand } from "../../api/apiCommands";
 import { styles } from "./styles";
 import { executeCommand, parseJogCommand } from "../../utils/commands";
+import PositionLabels from "./components/Positions";
+import useMachineStatus from "../../hooks/useMachineStatus";
 
 const ControlPanel = () => {
   const [xyVelocity, setXYVelocity] = useState(1000);
   const [zVelocity, setZVelocity] = useState(500);
-
+  const { mPos, wPos } = useMachineStatus(); 
   const handleXYVelocityChange = (value) => {
     console.log(`XY velocity updated to: ${value} mm/min`);
     setXYVelocity(value);
@@ -61,30 +63,48 @@ const ControlPanel = () => {
     await executeCommand(command, sendHttpCommand);
   };
 
+  const positions = [
+    {
+      label: "Xw",
+      value: wPos?.x.toFixed(3) ?? '990.000',
+      subPosition: {
+        label: "Xm",
+        value: mPos?.x.toFixed(3) ?? '0.000',
+      },
+    },
+    {
+      label: "Yw",
+      value: wPos?.y.toFixed(3) ?? '990.000',
+      subPosition: {
+        label: "Ym",
+        value: mPos?.y.toFixed(3) ?? '0.000',
+      },
+    },
+    {
+      label: "Zw",
+      value: wPos?.z.toFixed(3) ?? '990.000',
+      subPosition: {
+        label: "Zm",
+        value: mPos?.z.toFixed(3) ?? '0.000',
+      },
+    },
+  ];
+
   return (
-    <div id="controlPanel" style={styles.controlPanel}>
-      <div style={styles.flexContainer}>
-        <div id="control-body" style={styles.jogUIContainer}>
-          <div id="JogUI">
-            <JogRose onCommand={handleChange} />
-          </div>
-          <div id="JogBarUI" style={styles.jogBarUI}>
-            <JogBar onCommand={handleChange} />
+    <div style={styles.controlPanel}>
+        <div style={styles.jogContainer}>
+          <VelocityControls
+            xyVelocity={xyVelocity}
+            zVelocity={zVelocity}
+            onXYVelocityChange={handleXYVelocityChange}
+            onZVelocityChange={handleZVelocityChange}
+          />
+          <div style={styles.jog}>
+              <JogRose onCommand={handleChange} />
+              <JogBar onCommand={handleChange} />
           </div>
         </div>
-        <VelocityControls
-          xyVelocity={xyVelocity}
-          zVelocity={zVelocity}
-          onXYVelocityChange={handleXYVelocityChange}
-          onZVelocityChange={handleZVelocityChange}
-        />
-        <button
-          style={styles.zeroButton}
-          onClick={handleZeroButtonClick}
-        >
-          Ø<span style={{ fontSize: "8px", marginLeft: "5px" }}>XYZ</span>
-        </button>
-      </div>
+        <PositionLabels positions={positions} onZero={handleZeroButtonClick} />
     </div>
   );
 };

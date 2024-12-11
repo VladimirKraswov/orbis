@@ -28,6 +28,7 @@ const Visualizer = () => {
   const { settings } = useSettings(); // Используем настройки из контекста
   const { sendGCode, isSending } = useSendGCode();
   const { mPos } = useMachineStatus();
+  
   const { mountRef, sceneRef, axisGroupRef, cameraRef } = useThreeScene({
     rotation,
     position,

@@ -3,7 +3,7 @@ import { JogButtons } from "./JogButtons";
 
 export const JogRose = ({ onCommand }) => {
   return (
-    <svg width="256" height="260" xmlns="http://www.w3.org/2000/svg">
+    <svg width="245" height="245" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <style>
           {`

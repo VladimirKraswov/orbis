@@ -6,6 +6,7 @@ import { styles } from "./styles";
 export const VelocityControls = ({xyVelocity, zVelocity, onXYVelocityChange, onZVelocityChange }) => {
   return (
     <div style={styles.container}>
+      <span style={styles.inputLabelUnit}>mm/min</span>
       {/* Управление скоростью XY */}
       <CustomInput
         label="XY:"
