@@ -1,79 +1,27 @@
-export const buttonStyles = {
-  primary: {
-    backgroundColor: '#007bff',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '4px',
-    padding: '10px 20px',
-    cursor: 'pointer',
-    fontSize: '14px',
-    textAlign: 'center',
-  },
-  secondary: {
-    backgroundColor: '#6c757d',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '4px',
-    padding: '10px 20px',
-    cursor: 'pointer',
-    fontSize: '14px',
-    textAlign: 'center',
-  },
-  outlined: {
-    backgroundColor: 'transparent',
-    color: '#007bff',
-    border: '1px solid #007bff',
-    borderRadius: '4px',
-    padding: '10px 20px',
-    cursor: 'pointer',
-    fontSize: '14px',
-    textAlign: 'center',
-  },
-  disabled: {
-    backgroundColor: '#e9ecef',
-    color: '#adb5bd',
-    cursor: 'not-allowed',
-  },
-};
-
 export const styles = {
-  container: {
-    padding: '16px',
-    backgroundColor: '#252526',
-    color: '#ffffff',
-    fontFamily: 'Arial, sans-serif',
+  controlPanel: {
+    display: "flex",
+    flexDirection: "row",
   },
-  header: {
-    textAlign: 'center',
-    marginBottom: '16px',
+  jogUIContainer: {
+    display: "flex",
+    justifyContent: "center",
   },
-  inputContainer: {
-    marginBottom: '16px',
+  jogBarUI: {},
+  flexContainer: {
+    flex: 1,
   },
-  label: {
-    display: 'block',
-    marginBottom: '8px',
-    color: '#ffffff',
-  },
-  input: {
-    marginLeft: '8px',
-    padding: '4px',
-    borderRadius: '4px',
-    border: '1px solid #555',
-    backgroundColor: '#1e1e1e',
-    color: '#ffffff',
-  },
-  buttonContainer: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(2, 1fr)',
-    gap: '8px',
-    justifyItems: 'center',
-    alignItems: 'center',
-    marginBottom: '16px',
-  },
-  buttonGroup: {
-    display: 'flex',
-    justifyContent: 'space-around',
-    gap: '8px',
+  zeroButton: {
+    marginTop: "10px",
+    padding: "5px 10px",
+    background: "linear-gradient(145deg, var(--color-gradient-start), var(--color-gradient-end))",
+    border: "1px solid var(--color-border)",
+    borderRadius: "10px",
+    color: "var(--color-text)",
+    fontSize: "14px",
+    fontWeight: "600",
+    cursor: "pointer",
+    boxShadow: "5px 5px 10px var(--color-shadow-primary), -5px -5px 10px var(--color-shadow-secondary)",
+    transition: "all 0.3s ease",
   },
 };
