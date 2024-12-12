@@ -6,3 +6,4 @@ export { default as Block } from './Block';
 export { default as IconButton } from './IconButton';
 export { default as Checkbox } from './CheckBox';
 export { default as CustomInput } from './CustomInput';
+export { default as Tooltip } from './Tooltip';

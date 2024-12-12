@@ -74,3 +74,23 @@ export const sendHttpCommand = async (command) => {
   }
 };
 
+export const fetchMachineParameters = async () => {
+  try {
+    const response = await sendHttpCommand("$$"); // Получение всех параметров
+    const lines = response.split("\n"); // Разделение ответа на строки
+
+    const xLine = lines.find((line) => line.startsWith("$130="));
+    const yLine = lines.find((line) => line.startsWith("$131="));
+    const zLine = lines.find((line) => line.startsWith("$132="));
+
+    const x = xLine ? parseFloat(xLine.split("=")[1]) : 0;
+    const y = yLine ? parseFloat(yLine.split("=")[1]) : 0;
+    const z = zLine ? parseFloat(zLine.split("=")[1]) : 0;
+
+    return { x, y, z };
+  } catch (error) {
+    console.error("Error fetching machine parameters:", error);
+    return { x: 0, y: 0, z: 0 }; // Значения по умолчанию при ошибке
+  }
+};
+

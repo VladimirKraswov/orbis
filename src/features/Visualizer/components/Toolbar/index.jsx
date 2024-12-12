@@ -1,14 +1,14 @@
 import { useRef, useState } from "preact/hooks";
 import PropTypes from "prop-types";
-import { Checkbox, IconButton } from "../../../../components";
-import Modal from "../../../../components/Modal";
-import { styles } from "./styles";
-import { useSettings } from "../../../../providers/Settings";
 
-const Toolbar = ({ onOpenDimensions, onLoadGCode, onGetHeightMap }) => {
+import SettingsModal from "../Modals/SettingsModal";
+import { IconButton } from "../../../../components";
+
+import { styles } from "./styles";
+
+const Toolbar = ({ onLoadGCode, onGetHeightMap }) => {
+  const [isSettingsModal, setIsSettingsModal] = useState(false)
   const fileInputRef = useRef(null);
-  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
-  const { settings, updateSetting } = useSettings();
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
@@ -35,20 +35,12 @@ const Toolbar = ({ onOpenDimensions, onLoadGCode, onGetHeightMap }) => {
     }
   };
 
-  const openSettingsModal = () => {
-    setIsSettingsModalOpen(true);
-  };
-
-  const closeSettingsModal = () => {
-    setIsSettingsModalOpen(false);
-  };
-
   return (
     <div style={styles.container}>
       <IconButton
         icon="⚙"
-        tooltip="Установить размеры"
-        onClick={onOpenDimensions}
+        tooltip="Настройки"
+        onClick={() => setIsSettingsModal(true)}
       />
       <IconButton
         icon="⛰"
@@ -60,11 +52,6 @@ const Toolbar = ({ onOpenDimensions, onLoadGCode, onGetHeightMap }) => {
         tooltip="Загрузить G-код"
         onClick={triggerFileInput}
       />
-      <IconButton
-        icon="🔧"
-        tooltip="Настройки"
-        onClick={openSettingsModal}
-      />
       <input
         type="file"
         accept=".gcode,.txt,.nc"
@@ -73,26 +60,15 @@ const Toolbar = ({ onOpenDimensions, onLoadGCode, onGetHeightMap }) => {
         onChange={handleFileChange}
       />
 
-      <Modal isOpen={isSettingsModalOpen} onClose={closeSettingsModal}>
-        <div style={{ padding: "20px" }}>
-          <Checkbox
-            label="Показать контур движения"
-            checked={settings.showPath}
-            onChange={(value) => updateSetting("showPath", value)}
-          />
-          <Checkbox
-            label="Учитывать ось Z"
-            checked={settings.considerZ}
-            onChange={(value) => updateSetting("considerZ", value)}
-          />
-        </div>
-      </Modal>
+      <SettingsModal
+        isOpen={isSettingsModal}
+        onClose={() => setIsSettingsModal(false)}
+      />
     </div>
   );
 };
 
 Toolbar.propTypes = {
-  onOpenDimensions: PropTypes.func.isRequired,
   onLoadGCode: PropTypes.func.isRequired,
   onGetHeightMap: PropTypes.func.isRequired,
 };
