@@ -7,6 +7,7 @@ const SETTINGS_KEY = "app_settings";
 const defaultSettings = {
   showPath: false,
   considerZ: false,
+  intervalReport: { mode: 'disabled', value: 1000 }, 
 };
 
 export const SettingsProvider = ({ children }) => {
