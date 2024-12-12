@@ -33,23 +33,25 @@ function useMachineStatus() {
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        const esp800 = await sendHttpCommand('[ESP800]');
-        const preferences = await fetch('http://192.168.1.149/preferences2.json').then(res => res.json());
-        const macrocfg = await fetch('http://192.168.1.149/macrocfg.json').then(res => res.json());
-        const gCode = await sendHttpCommand('$G');
-        const xHomingMpos = await sendHttpCommand('$/axes/x/homing/mpos_mm');
-        const xHomingDirection = await sendHttpCommand('$/axes/x/homing/positive_direction');
-        const xMaxTravel = await sendHttpCommand('$/axes/x/max_travel_mm');
-        const yHomingMpos = await sendHttpCommand('$/axes/y/homing/mpos_mm');
-        const yHomingDirection = await sendHttpCommand('$/axes/y/homing/positive_direction');
-        const yMaxTravel = await sendHttpCommand('$/axes/y/max_travel_mm');
-        const esp400 = await sendHttpCommand('[ESP400]');
-        const ss = await sendHttpCommand('$SS');
-
-        setInitialData({
+        const results = await Promise.allSettled([
+          sendHttpCommand('[ESP800]'),
+          // fetch('http://192.168.1.149/preferences2.json').then(res => res.json()),
+          // fetch('http://192.168.1.149/macrocfg.json').then(res => res.json()),
+          sendHttpCommand('$G'),
+          sendHttpCommand('$/axes/x/homing/mpos_mm'),
+          sendHttpCommand('$/axes/x/homing/positive_direction'),
+          sendHttpCommand('$/axes/x/max_travel_mm'),
+          sendHttpCommand('$/axes/y/homing/mpos_mm'),
+          sendHttpCommand('$/axes/y/homing/positive_direction'),
+          sendHttpCommand('$/axes/y/max_travel_mm'),
+          sendHttpCommand('[ESP400]'),
+          sendHttpCommand('$SS'),
+        ]);
+  
+        const [
           esp800,
-          preferences,
-          macrocfg,
+          // preferences,
+          // macrocfg,
           gCode,
           xHomingMpos,
           xHomingDirection,
@@ -59,12 +61,12 @@ function useMachineStatus() {
           yMaxTravel,
           esp400,
           ss,
-        });
-
-        console.log('Initial data fetched:', {
+        ] = results.map(result => (result.status === 'fulfilled' ? result.value : null));
+  
+        setInitialData({
           esp800,
-          preferences,
-          macrocfg,
+          // preferences,
+          // macrocfg,
           gCode,
           xHomingMpos,
           xHomingDirection,
@@ -76,15 +78,15 @@ function useMachineStatus() {
           ss,
         });
       } catch (err) {
-        console.error('Error fetching initial data:', err);
-        setError('Ошибка загрузки начальных данных');
+        console.error('Error in fetchInitialData:', err);
       } finally {
-        setTimeout(() => setIsInitializing(false), 2000); // Добавлена задержка перед завершением инициализации
+        setTimeout(() => setIsInitializing(false), 1000);
       }
     };
-
+  
     fetchInitialData();
-  }, []); // Выполняется один раз при монтировании
+  }, []);
+  
 
   useEffect(() => {
     let intervalId;
@@ -127,6 +129,8 @@ function useMachineStatus() {
   }, [settings.intervalReport.mode, settings.intervalReport.value, isInitializing]); // Добавляем isInitializing в зависимости
 
   useEffect(() => {
+    console.log('Message', messages);
+    
     const latestStatusMessage = [...messages].reverse().find(msg => msg.startsWith('<'));
     if (!latestStatusMessage) return;
 
