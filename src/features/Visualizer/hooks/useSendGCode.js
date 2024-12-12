@@ -6,10 +6,22 @@ export const useSendGCode = () => {
   const { messages } = useWebSocket();
   const [isSending, setIsSending] = useState(false);
   const resolveOkRef = useRef(null);
+  const [bufferSize, setBufferSize] = useState(0);
+  const bufferLimit = 5; // Максимальное количество команд в буфере
 
-  const waitForOk = () => {
-    return new Promise((resolve) => {
+  const logWithTimestamp = (message) => {
+    console.log(`[${new Date().toISOString()}] ${message}`);
+  };
+
+  const waitForOk = (timeout = 30000) => {
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => {
+        resolveOkRef.current = null;
+        reject(new Error("Timeout waiting for 'ok' or 'Idle' response"));
+      }, timeout);
+
       resolveOkRef.current = () => {
+        clearTimeout(timer);
         resolveOkRef.current = null;
         resolve();
       };
@@ -19,52 +31,78 @@ export const useSendGCode = () => {
   useEffect(() => {
     if (messages.length > 0 && resolveOkRef.current) {
       const lastMessage = messages[messages.length - 1];
-      if (lastMessage === 'ok') {
+
+      // Проверяем состояния
+      if (lastMessage === "ok" || lastMessage.includes("Idle")) {
         resolveOkRef.current();
+        setBufferSize((prev) => Math.max(prev - 1, 0)); // Уменьшаем размер буфера
+      } else {
+        logWithTimestamp(`Received message: ${lastMessage}`);
       }
     }
   }, [messages]);
 
   const sendInitializationCommands = async () => {
     try {
-      await sendHttpCommand('$X'); // Сброс тревоги
-      console.log('Alarm reset');
+      logWithTimestamp("Sending initialization commands...");
+      await sendHttpCommand("$X");
+      logWithTimestamp("Alarm reset command sent.");
       await waitForOk();
 
-      await sendHttpCommand('$H'); // Homing
-      console.log('Homing completed');
+      await sendHttpCommand("$H");
+      logWithTimestamp("Homing command sent.");
       await waitForOk();
+
+      logWithTimestamp("Initialization completed.");
     } catch (error) {
-      console.error('Error during initialization:', error);
+      throw new Error(`Initialization failed: ${error.message}`);
     }
+  };
+
+  const validateGCode = (gcode) => {
+    const lines = gcode.split("\n").map((line) => line.trim());
+    const invalidLines = lines.filter((line) => {
+      return !/^(G|M)[0-9]/i.test(line) && line !== "";
+    });
+
+    if (invalidLines.length > 0) {
+      throw new Error(`Invalid G-code lines detected: ${invalidLines.join(", ")}`);
+    }
+    return lines.filter((line) => line);
   };
 
   const sendGCode = async (gcode) => {
     if (!gcode) {
-      console.error('No G-code provided');
+      logWithTimestamp("No G-code provided.");
       return;
     }
 
     setIsSending(true);
 
     try {
-      // Выполняем разблокировку
-     await sendInitializationCommands();
+      const lines = validateGCode(gcode);
+      logWithTimestamp(`Validated G-code: ${lines.length} lines.`);
 
-      const lines = gcode.split('\n').map((line) => line.trim()).filter((line) => line);
-      console.log('G-code lines:', lines);
-      
+      await sendInitializationCommands();
 
       for (const line of lines) {
+        // Ожидание освобождения места в буфере
+        while (bufferSize >= bufferLimit) {
+          logWithTimestamp("Buffer full, waiting...");
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+
+        // Отправка команды
         await sendHttpCommand(line);
-        console.log(`HTTP Sent: ${line}`);
+        setBufferSize((prev) => prev + 1); // Увеличиваем размер буфера
+        logWithTimestamp(`Sent: ${line}`);
         await waitForOk();
-        console.log(`Confirmed: ${line}`);
+        logWithTimestamp(`Acknowledged: ${line}`);
       }
 
-      console.log('G-code sending completed.');
+      logWithTimestamp("All G-code lines sent successfully.");
     } catch (error) {
-      console.error('Error sending G-code:', error);
+      console.error("Error sending G-code:", error.message);
     } finally {
       setIsSending(false);
     }
