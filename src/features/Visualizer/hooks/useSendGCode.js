@@ -1,19 +1,26 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import { sendHttpCommand } from "../../../api/apiCommands";
 import { useWebSocket } from "../../../providers/WebSocketContext";
+import { logWithTimestamp, validateGCode } from "../../../utils";
+
+const BUFFER_LIMIT = 5; 
+const TIMEOUT = 30000;
 
 export const useSendGCode = () => {
   const { messages } = useWebSocket();
   const [isSending, setIsSending] = useState(false);
   const resolveOkRef = useRef(null);
   const [bufferSize, setBufferSize] = useState(0);
-  const bufferLimit = 5; // Максимальное количество команд в буфере
+  // Максимальное количество команд в буфере
+  const [currentLineIndex, setCurrentLineIndex] = useState(0);
 
-  const logWithTimestamp = (message) => {
-    console.log(`[${new Date().toISOString()}] ${message}`);
+  const resetState = () => {
+    setBufferSize(0);
+    resolveOkRef.current = null;
+    setCurrentLineIndex(0);
   };
 
-  const waitForOk = (timeout = 30000) => {
+  const waitForOk = (timeout = TIMEOUT) => {
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
         resolveOkRef.current = null;
@@ -59,18 +66,6 @@ export const useSendGCode = () => {
     }
   };
 
-  const validateGCode = (gcode) => {
-    const lines = gcode.split("\n").map((line) => line.trim());
-    const invalidLines = lines.filter((line) => {
-      return !/^(G|M)[0-9]/i.test(line) && line !== "";
-    });
-
-    if (invalidLines.length > 0) {
-      throw new Error(`Invalid G-code lines detected: ${invalidLines.join(", ")}`);
-    }
-    return lines.filter((line) => line);
-  };
-
   const sendGCode = async (gcode) => {
     if (!gcode) {
       logWithTimestamp("No G-code provided.");
@@ -85,25 +80,28 @@ export const useSendGCode = () => {
 
       await sendInitializationCommands();
 
-      for (const line of lines) {
+      for (let i = currentLineIndex; i < lines.length; i++) {
+        setCurrentLineIndex(i);
+
         // Ожидание освобождения места в буфере
-        while (bufferSize >= bufferLimit) {
+        while (bufferSize >= BUFFER_LIMIT) {
           logWithTimestamp("Buffer full, waiting...");
           await new Promise((resolve) => setTimeout(resolve, 100));
         }
 
         // Отправка команды
-        await sendHttpCommand(line);
+        await sendHttpCommand(lines[i]);
         setBufferSize((prev) => prev + 1); // Увеличиваем размер буфера
-        logWithTimestamp(`Sent: ${line}`);
+        logWithTimestamp(`Sent: ${lines[i]}`);
         await waitForOk();
-        logWithTimestamp(`Acknowledged: ${line}`);
+        logWithTimestamp(`Acknowledged: ${lines[i]}`);
       }
 
       logWithTimestamp("All G-code lines sent successfully.");
     } catch (error) {
       console.error("Error sending G-code:", error.message);
     } finally {
+      resetState(); // Сбрасываем состояние после завершения
       setIsSending(false);
     }
   };
