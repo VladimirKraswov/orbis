@@ -2,50 +2,76 @@ import * as THREE from 'three';
 import { Line2 } from 'three/examples/jsm/lines/Line2';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry';
+import { isCollinear, shouldAddPoint } from '../../utils';
 
+
+/**
+ * Class representing a drawable path in a 3D scene.
+ */
 export class Path {
-  constructor(group, color = 0xFF4500, lineWidth = 5) {
-    this.group = group; // Привязываем путь к группе
-    this.points = [];
-    this.line = null;
-    this.color = color;
-    this.lineWidth = lineWidth;
+  constructor(group, color = 0xff4500, lineWidth = 5) {
+    this.group = group; // Group to attach the path
+    this.points = []; // Final optimized points for the path
+    this.buffer = []; // Temporary buffer for new points
+    this.line = null; // THREE.js Line2 object
+    this.color = color; // Line color
+    this.lineWidth = lineWidth; // Line width
+    this.distanceThreshold = 0.1; // Minimum distance between consecutive points
   }
 
-  interpolatePoints(p1, p2, segments = 10) {
-    const interpolated = [];
-    for (let i = 1; i <= segments; i++) {
-      const t = i / segments;
-      interpolated.push(
-        new THREE.Vector3(
-          THREE.MathUtils.lerp(p1.x, p2.x, t), // X
-          THREE.MathUtils.lerp(p1.y, p2.y, t), // Y
-          THREE.MathUtils.lerp(p1.z, p2.z, t), // Y
+  /**
+   * Processes buffered points by removing unnecessary points (collinear ones).
+   */
+  processBuffer() {
+    const optimizedPoints = [];
+
+    for (const point of this.buffer) {
+      if (
+        optimizedPoints.length >= 2 &&
+        isCollinear(
+          optimizedPoints[optimizedPoints.length - 2],
+          optimizedPoints[optimizedPoints.length - 1],
+          point
         )
-      );
+      ) {
+        optimizedPoints.pop(); // Remove the last point if it is collinear
+      }
+      optimizedPoints.push(point);
     }
-    return interpolated;
+
+    this.points.push(...optimizedPoints);
+    this.buffer = []; // Clear the buffer
   }
 
-  addPoint(point, interpolate = true) {
-    // Принудительно фиксируем Z = 0
+  /**
+   * Adds a point to the buffer. Processes the buffer and updates the line if needed.
+   * @param {THREE.Vector3} point - The new point to add.
+   */
+  addPoint(point) {
     const fixedPoint = new THREE.Vector3(point.x, point.y, point.z);
-    if (interpolate && this.points.length > 0) {
-      const lastPoint = this.points[this.points.length - 1];
-      this.points.push(...this.interpolatePoints(lastPoint, fixedPoint));
+
+    if (!shouldAddPoint(this.buffer, fixedPoint, this.distanceThreshold)) return; // Skip if too close
+
+    this.buffer.push(fixedPoint);
+
+    // Process buffer and update line if buffer reaches a threshold
+    if (this.buffer.length >= 50) {
+      this.processBuffer();
+      this.updateLine();
     }
-    this.points.push(fixedPoint);
-    this.updateLine();
   }
 
+  /**
+   * Updates the 3D line representation based on the points array.
+   */
   updateLine() {
     if (this.line) {
-      this.group.remove(this.line); // Удаляем линию из группы
+      this.group.remove(this.line); // Remove existing line
       this.line.geometry.dispose();
       this.line.material.dispose();
     }
 
-    if (this.points.length < 2) return;
+    if (this.points.length < 2) return; // Skip if not enough points
 
     const positions = this.points.flatMap(point => [point.x, point.y, point.z]);
     const geometry = new LineGeometry();
@@ -59,16 +85,30 @@ export class Path {
 
     this.line = new Line2(geometry, material);
     this.line.computeLineDistances();
-    this.group.add(this.line); // Добавляем линию в группу
+    this.group.add(this.line); // Add the updated line to the group
   }
 
+  /**
+   * Forces the buffer to be processed and updates the line.
+   */
+  flushBuffer() {
+    if (this.buffer.length > 0) {
+      this.processBuffer();
+      this.updateLine();
+    }
+  }
+
+  /**
+   * Clears the path, removing all points and the line.
+   */
   clear() {
     if (this.line) {
-      this.group.remove(this.line); // Удаляем линию из группы
+      this.group.remove(this.line); // Remove the line
       this.line.geometry.dispose();
       this.line.material.dispose();
       this.line = null;
     }
     this.points = [];
+    this.buffer = [];
   }
 }

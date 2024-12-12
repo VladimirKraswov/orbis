@@ -64,12 +64,16 @@ const Visualizer = () => {
   useEffect(() => {
     if (mPos && spindleRef.current) {
       spindleRef.current.position.set(mPos.x, mPos.y, mPos.z);
-
+  
       if (settings.showPath && pathRef.current) {
-        pathRef.current.addPoint(new THREE.Vector3(mPos.x, mPos.y, settings.considerZ ? mPos.z : 0), true);
+        pathRef.current.addPoint(
+          new THREE.Vector3(mPos.x, mPos.y, settings.considerZ ? mPos.z : 0)
+        );
+        pathRef.current.flushBuffer(); // Обновляем путь
       }
     }
   }, [mPos, settings]);
+  
 
   const handleCloseHeightMapModal = () => setIsHeightMapModalOpen(false);
 
