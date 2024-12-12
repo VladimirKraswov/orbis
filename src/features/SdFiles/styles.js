@@ -1,76 +1,60 @@
 export const styles = {
   container: {
-    backgroundColor: '#252526',
-    color: '#ffffff',
-    overflowY: 'auto',
-    border: '1px solid #444',
-    borderRadius: '4px',
-    fontFamily: 'monospace',
-    padding: '8px',
-    aspectRatio: '1 / 1',
-  },
-  header: {
-    margin: '0',
-    padding: '8px',
-    backgroundColor: '#2a2a2a',
-    borderBottom: '1px solid #3c3c3c',
-    fontSize: '16px',
-    color: '#f4f4f4',
-  },
-  dialog: {
-    position: 'fixed',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    backgroundColor: '#2e2e2e',
+    backgroundColor: '#1c1c1e',
+    color: '#e0e0e0',
+    fontFamily: 'Arial, sans-serif',
     padding: '16px',
     borderRadius: '8px',
-    boxShadow: '0 6px 12px rgba(0, 0, 0, 0.5)',
-    zIndex: 1000,
-    color: '#f4f4f4',
-    width: '320px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+  },
+  toolbar: {
+    display: 'flex',
+    gap: '12px',
+    marginBottom: '16px',
+  },
+  loading: {
+    color: '#999',
+    fontSize: '14px',
+    textAlign: 'center',
+  },
+  error: {
+    color: '#e57373',
+    fontSize: '14px',
+    textAlign: 'center',
   },
   input: {
-    width: '100%',
-    padding: '8px',
-    borderRadius: '4px',
+    width: 'calc(100% - 20px)', // Учитываем padding модального окна
+    padding: '10px',
+    margin: '10px 0',
+    borderRadius: '6px',
     border: '1px solid #444',
-    backgroundColor: '#2a2a2a',
-    color: '#f4f4f4',
+    backgroundColor: '#2b2b2b',
+    color: '#e0e0e0',
     fontSize: '14px',
+    boxSizing: 'border-box', // Гарантирует, что padding и border не выходят за границы
   },
-  button: {
-    backgroundColor: '#3b3b3b',
-    color: '#f4f4f4',
-    border: '1px solid #444',
-    borderRadius: '4px',
-    padding: '6px 12px',
-    cursor: 'pointer',
-    fontSize: '14px',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
-    transition: 'background-color 0.3s, box-shadow 0.3s',
+  dialogHeader: {
+    fontSize: '18px',
+    fontWeight: 'bold',
+    marginBottom: '8px',
   },
-};
-
-export const tableStyles = {
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse',
+  dialog: {
+    maxWidth: '400px',
+    width: '90%', // Уменьшаем ширину, чтобы контент всегда умещался
+    backgroundColor: '#2b2b2b',
+    padding: '20px',
+    borderRadius: '8px',
+    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.25)',
+    margin: '0 auto',
   },
-  header: {
-    textAlign: 'left',
-    padding: '8px',
-    backgroundColor: '#3a3a3a',
-    color: '#eaeaea',
-    borderBottom: '1px solid #4c4c4c',
+  actions: {
+    display: 'flex',
+    gap: '8px',
   },
-  cell: {
-    padding: '8px',
-    color: '#dedede',
-    borderBottom: '1px solid #3c3c3c',
-  },
-  row: {
-    backgroundColor: '#2e2e2e',
-    transition: 'background-color 0.3s',
+  dialogActions: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    gap: '12px',
+    marginTop: '16px',
   },
 };

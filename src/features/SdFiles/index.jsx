@@ -1,7 +1,15 @@
 import { useState, useEffect } from 'preact/hooks';
 import { Table, Modal, Button } from '../../components';
-import { styles } from './styles';
 import { createFolderApi, deleteFileApi, fetchFilesApi, renameFileApi, executeFileApi } from '../../api/apiFiles';
+import { styles } from './styles';
+
+const HIDDEN_FILES = [
+  'System Volume Information',
+  '.Spotlight-V100',
+  '.fseventsd',
+  'Thumbs.db',
+  '.DS_Store',
+];
 
 const SdFiles = () => {
   const [files, setFiles] = useState([]);
@@ -12,22 +20,13 @@ const SdFiles = () => {
   const [renameValue, setRenameValue] = useState('');
   const [isModalLoading, setIsModalLoading] = useState(false);
 
-  const hiddenFiles = [
-    'System Volume Information',
-    '.Spotlight-V100',
-    '.fseventsd',
-    'Thumbs.db',
-    '.DS_Store',
-  ];
-
   const fetchFiles = async () => {
     setIsLoading(true);
     setError(null);
 
     try {
       const data = await fetchFilesApi('/');
-      const visibleFiles = data.filter((file) => !hiddenFiles.includes(file.name));
-      setFiles(visibleFiles);
+      setFiles(data.filter((file) => !HIDDEN_FILES.includes(file.name)));
     } catch (err) {
       setError(err.message);
     } finally {
@@ -42,30 +41,34 @@ const SdFiles = () => {
   const handleDialogConfirm = async () => {
     const { type, data } = dialog;
     setIsModalLoading(true);
-  
+
     try {
-      if (type === 'create-folder') {
-        if (!newFolderName.trim()) return;
-  
-        const response = await createFolderApi('/', newFolderName);
-  
-        // Проверяем, что response существует и содержит поле files
-        const updatedFiles = response?.files?.filter((file) => !hiddenFiles.includes(file.name)) || [];
-        setFiles(updatedFiles);
-      } else if (type === 'rename') {
-        if (!renameValue.trim()) return;
-        await renameFileApi('/', data.shortname, renameValue);
-        fetchFiles(); // Обновляем список файлов после переименования
-      } else if (type === 'delete') {
-        const response = await deleteFileApi('/', data.shortname);
-  
-        // Проверяем, что response существует и содержит поле files
-        const updatedFiles = response?.files?.filter((file) => !hiddenFiles.includes(file.name)) || [];
-        setFiles(updatedFiles);
-      } else if (type === 'execute') {
-        await executeFileApi(data.shortname);
-      } else {
-        fetchFiles(); // Обновляем список файлов для всех остальных действий
+      switch (type) {
+        case 'create-folder':
+          if (newFolderName.trim()) {
+            const response = await createFolderApi('/', newFolderName);
+            setFiles(response?.files?.filter((file) => !HIDDEN_FILES.includes(file.name)) || []);
+          }
+          break;
+
+        case 'rename':
+          if (renameValue.trim()) {
+            await renameFileApi('/', data.shortname, renameValue);
+            fetchFiles();
+          }
+          break;
+
+        case 'delete':
+          const response = await deleteFileApi('/', data.shortname);
+          setFiles(response?.files?.filter((file) => !HIDDEN_FILES.includes(file.name)) || []);
+          break;
+
+        case 'execute':
+          await executeFileApi(data.shortname);
+          break;
+
+        default:
+          fetchFiles();
       }
     } catch (err) {
       setError(err.message);
@@ -74,7 +77,6 @@ const SdFiles = () => {
       closeDialog();
     }
   };
-  
 
   const openDialog = (type, data = null) => {
     setDialog({ isOpen: true, type, data });
@@ -88,26 +90,63 @@ const SdFiles = () => {
     setRenameValue('');
   };
 
-  const fileRows = files.map((file) => [
-    file.size === '-1' ? '📁 ' + file.shortname : '📄 ' + file.shortname,
-    file.size !== '-1' ? `${file.size} bytes` : 'Directory',
-    <>
-      <Button type="primary" onClick={() => openDialog('execute', file)}>
-        ▶️
-      </Button>
-      <Button type="secondary" onClick={() => openDialog('rename', file)}>
-        ✏️
-      </Button>
-      <Button type="outlined" onClick={() => openDialog('delete', file)}>
-        🗑️
-      </Button>
-    </>,
-  ]);
+  const renderDialogContent = () => {
+    switch (dialog.type) {
+      case 'create-folder':
+        return (
+          <>
+            <h3 style={styles.dialogHeader}>Create New Folder</h3>
+            <input
+              style={styles.input}
+              value={newFolderName}
+              // @ts-ignore
+              onChange={(e) => setNewFolderName(e.target.value)}
+              placeholder="Folder name"
+            />
+          </>
+        );
+      case 'rename':
+        return (
+          <>
+            <h3 style={styles.dialogHeader}>Rename File/Folder</h3>
+            <input
+              style={styles.input}
+              value={renameValue}
+              // @ts-ignore
+              onChange={(e) => setRenameValue(e.target.value)}
+              placeholder="New name"
+            />
+          </>
+        );
+      case 'delete':
+        return <p>Are you sure you want to delete <strong>{dialog.data?.shortname}</strong>?</p>;
+      case 'execute':
+        return <p>Do you want to execute <strong>{dialog.data?.shortname}</strong>?</p>;
+      default:
+        return null;
+    }
+  };
+
+  const renderFileRows = () =>
+    files.map((file) => [
+      file.size === '-1' ? `📁 ${file.shortname}` : `📄 ${file.shortname}`,
+      file.size !== '-1' ? `${file.size} bytes` : 'Directory',
+      <div style={styles.actions}>
+        <Button type="primary" onClick={() => openDialog('execute', file)}>
+          ▶️
+        </Button>
+        <Button type="secondary" onClick={() => openDialog('rename', file)}>
+          ✏️
+        </Button>
+        <Button type="outlined" onClick={() => openDialog('delete', file)}>
+          🗑️
+        </Button>
+      </div>,
+    ]);
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.header}>SD Files</h2>
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+      <div style={styles.toolbar}>
         <Button type="primary" onClick={fetchFiles}>
           Refresh
         </Button>
@@ -115,60 +154,31 @@ const SdFiles = () => {
           Create Folder
         </Button>
       </div>
-      {isLoading && <p style={{ color: '#aaaaaa' }}>Loading files...</p>}
-      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+
+      {isLoading && <p style={styles.loading}>Loading files...</p>}
+      {error && <p style={styles.error}>Error: {error}</p>}
+
       {!isLoading && !error && (
-        <Table
-          columns={['Name', 'Size', 'Actions']}
-          data={fileRows}
-        />
+        <Table columns={['Name', 'Size', 'Actions']} data={renderFileRows()} />
       )}
+
       <Modal isOpen={dialog.isOpen} onClose={closeDialog}>
-        {isModalLoading ? (
-          // @ts-ignore
-          <p>Loading...</p>
-        ) : (
-          <>
-            {dialog.type === 'create-folder' && (
-              <>
-                <h3>Create New Folder</h3>
-                <input
-                  style={styles.input}
-                  value={newFolderName}
-                  // @ts-ignore
-                  onChange={(e) => setNewFolderName(e.target.value)}
-                  placeholder="Folder name"
-                />
-              </>
-            )}
-            {dialog.type === 'rename' && (
-              <>
-                <h3>Rename File/Folder</h3>
-                <input
-                  style={styles.input}
-                  value={renameValue}
-                  // @ts-ignore
-                  onChange={(e) => setRenameValue(e.target.value)}
-                  placeholder="New name"
-                />
-              </>
-            )}
-            {dialog.type === 'delete' && (
-              <p>Are you sure you want to delete {dialog.data?.shortname}?</p>
-            )}
-            {dialog.type === 'execute' && (
-              <p>Do you want to execute {dialog.data?.shortname}?</p>
-            )}
-            <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
-              <Button type="primary" onClick={handleDialogConfirm}>
-                Confirm
-              </Button>
-              <Button type="secondary" onClick={closeDialog}>
-                Cancel
-              </Button>
-            </div>
-          </>
-        )}
+        {isModalLoading ? <p style={styles.loading}>Loading...</p> : renderDialogContent()}
+        <div style={styles.dialogActions}>
+          <Button
+            type="primary"
+            onClick={handleDialogConfirm}
+            disabled={
+              (dialog.type === 'create-folder' && !newFolderName.trim()) ||
+              (dialog.type === 'rename' && !renameValue.trim())
+            }
+          >
+            Confirm
+          </Button>
+          <Button type="secondary" onClick={closeDialog}>
+            Cancel
+          </Button>
+        </div>
       </Modal>
     </div>
   );
