@@ -2,11 +2,16 @@ import { useState, useEffect } from 'react';
 import { sendHttpCommand } from '../../api/apiCommands';
 import { useWebSocket } from '../../providers/WebSocketContext';
 import IntervalReportSettings from './components/IntervalReport';
+import ProgressBar from './components/ProgressBar';
+import Status from './components/Status';
+import styles from './styles';
 
 const Reports = () => {
   const { messages } = useWebSocket();
   const [status, setStatus] = useState('Idle');
   const [isAlarm, setIsAlarm] = useState(false);
+  const [progress, setProgress] = useState(null);
+  const [fileName, setFileName] = useState('');
 
   useEffect(() => {
     const latestStatusMessage = [...messages].reverse().find((msg) => msg.startsWith('<'));
@@ -18,6 +23,18 @@ const Reports = () => {
 
         setStatus(machineStatus);
         setIsAlarm(machineStatus.toLowerCase().includes('alarm'));
+
+        if (machineStatus !== 'Idle') {
+          const sdPart = parts.find((part) => part.startsWith('SD:'));
+          if (sdPart) {
+            const [progressValue, file] = sdPart.replace('SD:', '').split(',');
+            setProgress(parseFloat(progressValue));
+            setFileName(file);
+          }
+        } else {
+          setProgress(null);
+          setFileName('');
+        }
       } catch (err) {
         console.error('Error parsing WebSocket message:', err);
       }
@@ -34,68 +51,23 @@ const Reports = () => {
   };
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '20px',
-        padding: '20px',
-        backgroundColor: '#1a1a1a',
-        borderRadius: '15px',
-        boxShadow: '0 4px 15px rgba(0, 0, 0, 0.5)',
-        color: '#fff',
-        maxWidth: '400px',
-        margin: 'auto',
-      }}
-    >
+    <div style={styles.container}>
       {isAlarm ? (
         <button
           onClick={handleUnlock}
-          title="Нажмите, чтобы разблокировать тревогу"
-          style={{
-            padding: '15px 40px',
-            backgroundColor: '#ff4c4c',
-            color: '#fff',
-            border: '2px solid #d32f2f',
-            borderRadius: '12px',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-            fontSize: '18px',
-            textTransform: 'uppercase',
-            boxShadow: '0 6px 20px rgba(255, 76, 76, 0.7)',
-            transition: 'transform 0.2s, box-shadow 0.2s',
-          }}
+          style={styles.alarmButton}
         >
           🚨 Alarm! Click to Unlock
         </button>
       ) : (
-        <div
-          title="Текущий статус системы"
-          style={{
-            padding: '15px 30px',
-            backgroundColor: '#4caf50',
-            color: '#fff',
-            borderRadius: '12px',
-            fontWeight: 'bold',
-            fontSize: '16px',
-            boxShadow: '0 4px 15px rgba(76, 175, 80, 0.6)',
-          }}
-        >
-          ✅ {status}
-        </div>
+        <Status status={status} />
       )}
 
-      <div
-        style={{
-          width: '100%',
-          backgroundColor: '#2e2e2e',
-          padding: '15px',
-          borderRadius: '10px',
-          boxShadow: '0 4px 10px rgba(0, 0, 0, 0.5)',
-        }}
-      >
+      {progress !== null && status !== 'Idle' && (
+        <ProgressBar progress={progress} fileName={fileName} />
+      )}
+
+      <div style={{ width: '100%', backgroundColor: '#2e2e2e', padding: '15px', borderRadius: '10px' }}>
         <IntervalReportSettings />
       </div>
     </div>
