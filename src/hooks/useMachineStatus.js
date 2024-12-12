@@ -3,6 +3,8 @@ import { useWebSocket } from '../providers/WebSocketContext';
 import { sendHttpCommand } from '../api/apiCommands';
 import { useSettings } from '../providers/Settings';
 
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 function parseCoordinates(part, prefix) {
   if (!part || !part.startsWith(prefix)) return null;
   try {
@@ -33,6 +35,7 @@ function useMachineStatus() {
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
+        await wait(1000);
         const results = await Promise.allSettled([
           sendHttpCommand('[ESP800]'),
           // fetch('http://192.168.1.149/preferences2.json').then(res => res.json()),
@@ -44,7 +47,7 @@ function useMachineStatus() {
           sendHttpCommand('$/axes/y/homing/mpos_mm'),
           sendHttpCommand('$/axes/y/homing/positive_direction'),
           sendHttpCommand('$/axes/y/max_travel_mm'),
-          sendHttpCommand('[ESP400]'),
+          // sendHttpCommand('[ESP400]'),
           sendHttpCommand('$SS'),
         ]);
   
@@ -93,15 +96,16 @@ function useMachineStatus() {
 
     const applySettings = async () => {
       const mode = settings.intervalReport.mode;
-      const value = settings.intervalReport.value || 1000;
+      const autoInterval = settings.intervalReport.value || 1000;
+      const pullInterval = 1000;
 
       try {
         if (mode === 'disabled') {
           await sendHttpCommand('$Report/Interval=0');
           console.log('Reports disabled.');
         } else if (mode === 'auto') {
-          await sendHttpCommand(`$Report/Interval=${value}`);
-          console.log(`Auto report set to ${value} ms.`);
+          await sendHttpCommand(`$Report/Interval=${autoInterval}`);
+          console.log(`Auto report set to ${autoInterval} ms.`);
         } else if (mode === 'poll') {
           await sendHttpCommand('$Report/Interval=0');
           console.log('Polling mode enabled.');
@@ -112,7 +116,7 @@ function useMachineStatus() {
               console.error('Error during polling:', err);
               setError('Не удалось отправить команду');
             }
-          }, value);
+          }, pullInterval);
         }
       } catch (err) {
         console.error('Error applying settings:', err);

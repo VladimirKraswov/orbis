@@ -4,7 +4,7 @@ import { JogBar } from "./components/JogBar";
 import { VelocityControls } from "./components/VelocityControls";
 import { sendHttpCommand } from "../../api/apiCommands";
 import { styles } from "./styles";
-import { executeCommand, parseJogCommand } from "../../utils/commands";
+import { parseJogCommand } from "../../utils/commands";
 import PositionLabels from "./components/Positions";
 import useMachineStatus from "../../hooks/useMachineStatus";
 
@@ -31,14 +31,14 @@ const ControlPanel = () => {
     };
 
     if (commandsMap[command]) {
-      await executeCommand(commandsMap[command], sendHttpCommand);
+      await sendHttpCommand(commandsMap[command]);
       return;
     }
 
     if (command.startsWith("Jog X") || command.startsWith("Jog Y")) {
       const jogCommand = parseJogCommand(command, xyVelocity, ["X", "Y"]);
       if (jogCommand) {
-        await executeCommand(jogCommand, sendHttpCommand);
+        await sendHttpCommand(jogCommand);
       } else {
         console.error("Invalid XY jog command");
       }
@@ -48,7 +48,7 @@ const ControlPanel = () => {
     if (command.startsWith("Jog Z")) {
       const jogCommand = parseJogCommand(command, zVelocity, ["Z"]);
       if (jogCommand) {
-        await executeCommand(jogCommand, sendHttpCommand);
+        await sendHttpCommand(jogCommand);
       } else {
         console.error("Invalid Z jog command");
       }
@@ -60,7 +60,7 @@ const ControlPanel = () => {
 
   const handleZeroButtonClick = async () => {
     const command = "G10 L20 P0 X0 Y0 Z0";
-    await executeCommand(command, sendHttpCommand);
+    await sendHttpCommand(command);
   };
 
   const positions = [

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'preact/hooks';
 import { Table, Modal, Button } from '../../components';
 import { styles } from './styles';
-import { createFolderApi, deleteFileApi, fetchFilesApi, renameFileApi } from '../../api/apiFiles';
+import { createFolderApi, deleteFileApi, fetchFilesApi, renameFileApi, executeFileApi } from '../../api/apiFiles';
 
 const SdFiles = () => {
   const [files, setFiles] = useState([]);
@@ -10,6 +10,7 @@ const SdFiles = () => {
   const [dialog, setDialog] = useState({ isOpen: false, type: '', data: null });
   const [newFolderName, setNewFolderName] = useState('');
   const [renameValue, setRenameValue] = useState('');
+  const [isModalLoading, setIsModalLoading] = useState(false);
 
   const hiddenFiles = [
     'System Volume Information',
@@ -40,24 +41,40 @@ const SdFiles = () => {
 
   const handleDialogConfirm = async () => {
     const { type, data } = dialog;
-
+    setIsModalLoading(true);
+  
     try {
       if (type === 'create-folder') {
         if (!newFolderName.trim()) return;
-        await createFolderApi(newFolderName);
+  
+        const response = await createFolderApi('/', newFolderName);
+  
+        // Проверяем, что response существует и содержит поле files
+        const updatedFiles = response?.files?.filter((file) => !hiddenFiles.includes(file.name)) || [];
+        setFiles(updatedFiles);
       } else if (type === 'rename') {
         if (!renameValue.trim()) return;
-        await renameFileApi(data.shortname, renameValue);
+        await renameFileApi('/', data.shortname, renameValue);
+        fetchFiles(); // Обновляем список файлов после переименования
       } else if (type === 'delete') {
-        await deleteFileApi(data.shortname);
+        const response = await deleteFileApi('/', data.shortname);
+  
+        // Проверяем, что response существует и содержит поле files
+        const updatedFiles = response?.files?.filter((file) => !hiddenFiles.includes(file.name)) || [];
+        setFiles(updatedFiles);
+      } else if (type === 'execute') {
+        await executeFileApi(data.shortname);
+      } else {
+        fetchFiles(); // Обновляем список файлов для всех остальных действий
       }
-      fetchFiles();
     } catch (err) {
       setError(err.message);
     } finally {
+      setIsModalLoading(false);
       closeDialog();
     }
   };
+  
 
   const openDialog = (type, data = null) => {
     setDialog({ isOpen: true, type, data });
@@ -75,7 +92,7 @@ const SdFiles = () => {
     file.size === '-1' ? '📁 ' + file.shortname : '📄 ' + file.shortname,
     file.size !== '-1' ? `${file.size} bytes` : 'Directory',
     <>
-      <Button type="primary" onClick={() => console.log(`Run action triggered for ${file.shortname}`)}>
+      <Button type="primary" onClick={() => openDialog('execute', file)}>
         ▶️
       </Button>
       <Button type="secondary" onClick={() => openDialog('rename', file)}>
@@ -107,41 +124,51 @@ const SdFiles = () => {
         />
       )}
       <Modal isOpen={dialog.isOpen} onClose={closeDialog}>
-        {dialog.type === 'create-folder' && (
+        {isModalLoading ? (
+          // @ts-ignore
+          <p>Loading...</p>
+        ) : (
           <>
-            <h3>Create New Folder</h3>
-            <input
-              style={styles.input}
-              value={newFolderName}
-              // @ts-ignore
-              onChange={(e) => setNewFolderName(e.target.value)}
-              placeholder="Folder name"
-            />
+            {dialog.type === 'create-folder' && (
+              <>
+                <h3>Create New Folder</h3>
+                <input
+                  style={styles.input}
+                  value={newFolderName}
+                  // @ts-ignore
+                  onChange={(e) => setNewFolderName(e.target.value)}
+                  placeholder="Folder name"
+                />
+              </>
+            )}
+            {dialog.type === 'rename' && (
+              <>
+                <h3>Rename File/Folder</h3>
+                <input
+                  style={styles.input}
+                  value={renameValue}
+                  // @ts-ignore
+                  onChange={(e) => setRenameValue(e.target.value)}
+                  placeholder="New name"
+                />
+              </>
+            )}
+            {dialog.type === 'delete' && (
+              <p>Are you sure you want to delete {dialog.data?.shortname}?</p>
+            )}
+            {dialog.type === 'execute' && (
+              <p>Do you want to execute {dialog.data?.shortname}?</p>
+            )}
+            <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
+              <Button type="primary" onClick={handleDialogConfirm}>
+                Confirm
+              </Button>
+              <Button type="secondary" onClick={closeDialog}>
+                Cancel
+              </Button>
+            </div>
           </>
         )}
-        {dialog.type === 'rename' && (
-          <>
-            <h3>Rename File/Folder</h3>
-            <input
-              style={styles.input}
-              value={renameValue}
-              // @ts-ignore
-              onChange={(e) => setRenameValue(e.target.value)}
-              placeholder="New name"
-            />
-          </>
-        )}
-        {dialog.type === 'delete' && (
-          <p>Are you sure you want to delete {dialog.data?.shortname}?</p>
-        )}
-        <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
-          <Button type="primary" onClick={handleDialogConfirm}>
-            Confirm
-          </Button>
-          <Button type="secondary" onClick={closeDialog}>
-            Cancel
-          </Button>
-        </div>
       </Modal>
     </div>
   );

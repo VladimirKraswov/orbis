@@ -16,10 +16,17 @@ export const WebSocketProvider = ({ children }) => {
   useEffect(() => {
     websocketRef.current = connectWebSocket(
       () => setMessages((prev) => [...prev, 'WebSocket: Connected']),
-      (data) => setMessages((prev) => [...prev, data.trim()]),
-      (error) => setMessages((prev) => [...prev, `WebSocket: Error: ${error}`]),
+      (data) => {
+        console.log('WebSocket Data Received:', data); // Логгируем полученные данные
+        setMessages((prev) => [...prev, data.trim()]);
+      },
+      (error) => {
+        console.error('WebSocket Error:', error); // Логгируем ошибки
+        setMessages((prev) => [...prev, `WebSocket: Error: ${error}`]);
+      },
       () => setMessages((prev) => [...prev, 'WebSocket: Disconnected'])
     );
+    
 
     return () => {
       if (websocketRef.current) {

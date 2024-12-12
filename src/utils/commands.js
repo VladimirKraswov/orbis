@@ -11,14 +11,3 @@ export const parseJogCommand = (command, velocity, validAxes) => {
   }
   return null;
 };
-
-export const executeCommand = async (command, sendHttpCommand) => {
-  const url = `${command}&PAGEID=1`;
-  try {
-    console.log(`Sending command: ${url}`);
-    await sendHttpCommand(url);
-    console.log(`Command sent: ${url}`);
-  } catch (error) {
-    console.error(`Failed to send command: ${url}`, error);
-  }
-};
