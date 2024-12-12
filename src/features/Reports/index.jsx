@@ -24,14 +24,14 @@ const Reports = () => {
         setStatus(machineStatus);
         setIsAlarm(machineStatus.toLowerCase().includes('alarm'));
 
-        if (machineStatus !== 'Idle') {
+        if (latestStatusMessage.includes('Run')) {
           const sdPart = parts.find((part) => part.startsWith('SD:'));
           if (sdPart) {
             const [progressValue, file] = sdPart.replace('SD:', '').split(',');
-            setProgress(parseFloat(progressValue));
-            setFileName(file);
+            setProgress(Math.min(parseFloat(progressValue), 100)); // Обеспечиваем нормализацию до 100%
+            setFileName(file || 'Unknown');
           }
-        } else {
+        } else if (machineStatus === 'Idle') {
           setProgress(null);
           setFileName('');
         }
@@ -63,11 +63,11 @@ const Reports = () => {
         <Status status={status} />
       )}
 
-      {progress !== null && status !== 'Idle' && (
+      {progress !== null && (
         <ProgressBar progress={progress} fileName={fileName} />
       )}
 
-      <div style={{ width: '100%', backgroundColor: '#2e2e2e', padding: '15px', borderRadius: '10px' }}>
+      <div style={styles.reportContainer}>
         <IntervalReportSettings />
       </div>
     </div>
