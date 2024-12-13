@@ -1,0 +1,41 @@
+const styles = {
+  status: {
+    height: '32px',
+    width: '60px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#4caf50',
+    color: '#fff',
+    borderRadius: '12px',
+    fontWeight: 'bold',
+    fontSize: '14px',
+    boxShadow: '0 4px 15px rgba(76, 175, 80, 0.6)',
+  },
+  homing: {
+    height: '32px',
+    width: '60px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ffeb3b',
+    color: '#000',
+    borderRadius: '12px',
+    fontWeight: 'bold',
+    fontSize: '14px',
+    boxShadow: '0 4px 15px rgba(255, 235, 59, 0.6)',
+  },
+  alarmButton: {
+    padding: '8px 16px',
+    backgroundColor: '#f44336',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '12px',
+    fontWeight: 'bold',
+    fontSize: '14px',
+    cursor: 'pointer',
+    boxShadow: '0 4px 15px rgba(244, 67, 54, 0.6)',
+  },
+};
+
+export default styles;

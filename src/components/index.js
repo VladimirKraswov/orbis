@@ -7,3 +7,6 @@ export { default as IconButton } from './IconButton';
 export { default as Checkbox } from './CheckBox';
 export { default as CustomInput } from './CustomInput';
 export { default as Tooltip } from './Tooltip';
+export { Tabs, Tab } from './Tabs';
+export { default as Status } from './Status';
+export { default as ProgressBar } from './ProgressBar';

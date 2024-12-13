@@ -1,17 +1,14 @@
 import { useState, useEffect } from 'react';
 
 import IntervalReportSettings from './components/IntervalReport';
-import ProgressBar from './components/ProgressBar';
-import Status from './components/Status';
 
 import { useMachine } from '../../providers/machine';
 
-import styles from './styles';
+import { styles } from './styles';
+import { ProgressBar, Tab, Tabs } from '../../components';
 
 const Reports = () => {
-  const { messages, sendCommand } = useMachine();
-  const [status, setStatus] = useState('Idle');
-  const [isAlarm, setIsAlarm] = useState(false);
+  const { messages } = useMachine();
   const [progress, setProgress] = useState(null);
   const [fileName, setFileName] = useState('');
 
@@ -23,14 +20,11 @@ const Reports = () => {
         const parts = cleanText.split('|');
         const machineStatus = parts[0] || 'Unknown';
 
-        setStatus(machineStatus);
-        setIsAlarm(machineStatus.toLowerCase().includes('alarm'));
-
         if (latestStatusMessage.includes('Run')) {
           const sdPart = parts.find((part) => part.startsWith('SD:'));
           if (sdPart) {
             const [progressValue, file] = sdPart.replace('SD:', '').split(',');
-            setProgress(Math.min(parseFloat(progressValue), 100)); // Обеспечиваем нормализацию до 100%
+            setProgress(Math.min(parseFloat(progressValue), 100));
             setFileName(file || 'Unknown');
           }
         } else if (machineStatus === 'Idle') {
@@ -43,35 +37,29 @@ const Reports = () => {
     }
   }, [messages]);
 
-  const handleUnlock = async () => {
-    try {
-      await sendCommand('$X');
-      console.log('Machine unlocked');
-    } catch (error) {
-      console.error('Failed to unlock the machine:', error);
-    }
-  };
 
   return (
     <div style={styles.container}>
-      {isAlarm ? (
-        <button
-          onClick={handleUnlock}
-          style={styles.alarmButton}
-        >
-          🚨 Alarm! Click to Unlock
-        </button>
-      ) : (
-        <Status status={status} />
-      )}
+      {!!progress && 
+        <ProgressBar
+          style={styles.progressBar}
+          progress={progress}
+          description={`File: ${fileName}`} 
+        />
+      } 
+      <Tabs style={styles.tabs}>
+        <Tab label="Interval" title="Spindle Control">
+          <IntervalReportSettings />
+        </Tab>
+        
+        <Tab label="Override" title="Override Settings">
+          <p>Override controls go here.</p>
+        </Tab>
 
-      {progress !== null && (
-        <ProgressBar progress={progress} fileName={fileName} />
-      )}
-
-      <div style={styles.reportContainer}>
-        <IntervalReportSettings />
-      </div>
+        <Tab label="Spindle" title="Spindle Control">
+          <p>Spindle Control.</p>
+        </Tab>
+      </Tabs>
     </div>
   );
 };

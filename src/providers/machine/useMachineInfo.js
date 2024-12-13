@@ -4,10 +4,10 @@ import { sendCommand } from './api';
 import { parseCoordinates, parseMachineParameters, wait } from './utils';
 import { useSettings } from '../Settings';
 
-function useMachineStatus(messages) {
+function useMachineInfo(messages) {
   const { settings } = useSettings();
 
-  const [status, setStatus] = useState('Unknown');
+  const [status, setStatus] = useState('Idle');
   const [mPos, setMPos] = useState({ x: 0, y: 0, z: 0 });
   const [wco, setWco] = useState({ x: 0, y: 0, z: 0 });
   const [wPos, setWPos] = useState({ x: 0, y: 0, z: 0 });
@@ -130,4 +130,4 @@ function useMachineStatus(messages) {
   return { status, mPos, wco, wPos, feedSpindle, initialData, machineParameters, error, isInitializing };
 }
 
-export default useMachineStatus;
+export default useMachineInfo;

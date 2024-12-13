@@ -53,13 +53,13 @@ export const useSendGCode = () => {
   const sendInitializationCommands = async () => {
     try {
       logWithTimestamp("Sending initialization commands...");
-      await sendCommand("$X");
-      logWithTimestamp("Alarm reset command sent.");
-      await waitForOk();
+      // await sendCommand("$X");
+      // logWithTimestamp("Alarm reset command sent.");
+      //await waitForOk();
 
-      await sendCommand("$H");
-      logWithTimestamp("Homing command sent.");
-      await waitForOk();
+      // await sendCommand("$H");
+      // logWithTimestamp("Homing command sent.");
+      // await waitForOk();
 
       logWithTimestamp("Initialization completed.");
     } catch (error) {

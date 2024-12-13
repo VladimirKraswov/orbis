@@ -1,20 +1,22 @@
-import { useState } from 'preact/hooks';
+import { Block, Status } from '../../components';
+import {
+  CommandConsole,
+  ControlPanel,
+  Visualizer,
+  SdFiles,
+  Sender,
+  Reports,
+} from '../../features';
+
 import { styles } from './styles';
-import { Block } from '../../components';
-import { CommandConsole, ControlPanel, Visualizer, SdFiles, Sender, Reports } from '../../features';
 
 const HomePage = () => {
-  const [logMessages, setLogMessages] = useState([]);
 
   return (
     <div style={styles.pageContainer}>
       <div style={styles.gridContainer}>
         <Block title="Controls">
-          <ControlPanel
-            onCommand={(cmd) =>
-              setLogMessages((prev) => [...prev, `Command executed: ${cmd}`])
-            }
-          />
+          <ControlPanel />
         </Block>
 
         <Block title="3D Visualizer">
@@ -27,7 +29,7 @@ const HomePage = () => {
           <CommandConsole />
         </Block>
 
-        <Block title="GRBL Reports">
+        <Block title="GRBL Reports" headerElements={<Status/>}>
           <Reports />
         </Block>
 

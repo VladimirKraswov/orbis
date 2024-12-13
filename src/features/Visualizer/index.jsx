@@ -27,7 +27,7 @@ const Visualizer = () => {
 
   const { settings } = useSettings();
   const { sendGCode, isSending } = useSendGCode();
-  const { status: { mPos } } = useMachine();
+  const { info: { mPos } } = useMachine();
 
   const { dimensions } = settings;
   

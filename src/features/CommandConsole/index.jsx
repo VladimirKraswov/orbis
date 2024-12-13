@@ -5,7 +5,7 @@ import { useMachine } from '../../providers/machine';
 
 
 const CommandConsole = () => {
-  const { messages, sendCommand, status: { initialData  } } = useMachine()
+  const { messages, sendCommand, info: { initialData  } } = useMachine()
   const [commands, setCommands] = useState([]);
   const [currentCommand, setCurrentCommand] = useState('');
   const [isAutoscroll, setIsAutoscroll] = useState(true);

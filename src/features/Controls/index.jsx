@@ -9,7 +9,7 @@ import PositionLabels from "./components/Positions";
 import { useMachine } from "../../providers/machine";
 
 const ControlPanel = () => {
-  const { status: { mPos, wPos }, sendCommand } = useMachine();
+  const { info: { mPos, wPos }, sendCommand } = useMachine();
   const [xyVelocity, setXYVelocity] = useState(1000);
   const [zVelocity, setZVelocity] = useState(500);
   const handleXYVelocityChange = (value) => {
