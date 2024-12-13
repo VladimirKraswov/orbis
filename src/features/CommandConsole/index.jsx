@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef } from 'preact/hooks';
 import styles from './styles';
-import { sendHttpCommand } from '../../api/apiCommands';
-import { useWebSocket } from '../../providers/WebSocketContext';
-import useMachineStatus from '../../hooks/useMachineStatus';
+
+import { useMachine } from '../../providers/machine';
+
 
 const CommandConsole = () => {
-  const { messages } = useWebSocket();
-  const { initialData } = useMachineStatus(); // Подключение к данным инициализации
+  const { messages, sendCommand, status: { initialData  } } = useMachine()
   const [commands, setCommands] = useState([]);
   const [currentCommand, setCurrentCommand] = useState('');
   const [isAutoscroll, setIsAutoscroll] = useState(true);
@@ -52,7 +51,7 @@ const CommandConsole = () => {
     if (!currentCommand.trim()) return;
 
     try {
-      await sendHttpCommand(currentCommand);
+      await sendCommand(currentCommand);
       setCommands((prev) => [...prev, `HTTP Sent: ${currentCommand}`]);
     } catch (error) {
       setCommands((prev) => [...prev, `HTTP Error: ${error.message}`]);

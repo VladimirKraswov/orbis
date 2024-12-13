@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
-import { sendHttpCommand } from '../../api/apiCommands';
-import { useWebSocket } from '../../providers/WebSocketContext';
+
 import IntervalReportSettings from './components/IntervalReport';
 import ProgressBar from './components/ProgressBar';
 import Status from './components/Status';
+
+import { useMachine } from '../../providers/machine';
+
 import styles from './styles';
 
 const Reports = () => {
-  const { messages } = useWebSocket();
+  const { messages, sendCommand } = useMachine();
   const [status, setStatus] = useState('Idle');
   const [isAlarm, setIsAlarm] = useState(false);
   const [progress, setProgress] = useState(null);
@@ -43,7 +45,7 @@ const Reports = () => {
 
   const handleUnlock = async () => {
     try {
-      await sendHttpCommand('$X');
+      await sendCommand('$X');
       console.log('Machine unlocked');
     } catch (error) {
       console.error('Failed to unlock the machine:', error);

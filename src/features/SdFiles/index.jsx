@@ -1,77 +1,44 @@
-import { useState, useEffect } from 'preact/hooks';
+import { useState } from 'preact/hooks';
+
 import { Table, Modal, Button } from '../../components';
-import { createFolderApi, deleteFileApi, fetchFilesApi, renameFileApi, executeFileApi } from '../../api/apiFiles';
+
+import { useMachine } from '../../providers/machine';
+
 import { styles } from './styles';
 
-const HIDDEN_FILES = [
-  'System Volume Information',
-  '.Spotlight-V100',
-  '.fseventsd',
-  'Thumbs.db',
-  '.DS_Store',
-];
 
 const SdFiles = () => {
-  const [files, setFiles] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [dialog, setDialog] = useState({ isOpen: false, type: '', data: null });
-  const [newFolderName, setNewFolderName] = useState('');
-  const [renameValue, setRenameValue] = useState('');
+  const [inputValue, setInputValue] = useState('');
   const [isModalLoading, setIsModalLoading] = useState(false);
 
-  const fetchFiles = async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const data = await fetchFilesApi('/');
-      setFiles(data.filter((file) => !HIDDEN_FILES.includes(file.name)));
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchFiles();
-  }, []);
+  const {
+    fs: { files, isLoading, error, fetchFiles, createFolder, renameFile, deleteFile, executeFile },
+  } = useMachine();
 
   const handleDialogConfirm = async () => {
-    const { type, data } = dialog;
     setIsModalLoading(true);
-
     try {
+      const { type, data } = dialog;
+
       switch (type) {
         case 'create-folder':
-          if (newFolderName.trim()) {
-            const response = await createFolderApi('/', newFolderName);
-            setFiles(response?.files?.filter((file) => !HIDDEN_FILES.includes(file.name)) || []);
-          }
+          await createFolder(inputValue);
           break;
-
         case 'rename':
-          if (renameValue.trim()) {
-            await renameFileApi('/', data.shortname, renameValue);
-            fetchFiles();
-          }
+          await renameFile(data.shortname, inputValue);
           break;
-
         case 'delete':
-          const response = await deleteFileApi('/', data.shortname);
-          setFiles(response?.files?.filter((file) => !HIDDEN_FILES.includes(file.name)) || []);
+          await deleteFile(data.shortname);
           break;
-
         case 'execute':
-          await executeFileApi(data.shortname);
+          await executeFile(data.shortname);
           break;
-
         default:
-          fetchFiles();
+          break;
       }
     } catch (err) {
-      setError(err.message);
+      console.error(`Error during ${dialog.type} action:`, err);
     } finally {
       setIsModalLoading(false);
       closeDialog();
@@ -80,27 +47,27 @@ const SdFiles = () => {
 
   const openDialog = (type, data = null) => {
     setDialog({ isOpen: true, type, data });
-    if (type === 'create-folder') setNewFolderName('');
-    if (type === 'rename') setRenameValue(data?.shortname || '');
+    setInputValue(type === 'rename' ? data?.shortname || '' : '');
   };
 
   const closeDialog = () => {
     setDialog({ isOpen: false, type: '', data: null });
-    setNewFolderName('');
-    setRenameValue('');
+    setInputValue('');
   };
 
   const renderDialogContent = () => {
-    switch (dialog.type) {
+    const { type, data } = dialog;
+
+    switch (type) {
       case 'create-folder':
         return (
           <>
             <h3 style={styles.dialogHeader}>Create New Folder</h3>
             <input
               style={styles.input}
-              value={newFolderName}
+              value={inputValue}
               // @ts-ignore
-              onChange={(e) => setNewFolderName(e.target.value)}
+              onChange={(e) => setInputValue(e.target.value)}
               placeholder="Folder name"
             />
           </>
@@ -111,17 +78,17 @@ const SdFiles = () => {
             <h3 style={styles.dialogHeader}>Rename File/Folder</h3>
             <input
               style={styles.input}
-              value={renameValue}
+              value={inputValue}
               // @ts-ignore
-              onChange={(e) => setRenameValue(e.target.value)}
+              onChange={(e) => setInputValue(e.target.value)}
               placeholder="New name"
             />
           </>
         );
       case 'delete':
-        return <p>Are you sure you want to delete <strong>{dialog.data?.shortname}</strong>?</p>;
+        return <p>Are you sure you want to delete <strong>{data?.shortname}</strong>?</p>;
       case 'execute':
-        return <p>Do you want to execute <strong>{dialog.data?.shortname}</strong>?</p>;
+        return <p>Do you want to execute <strong>{data?.shortname}</strong>?</p>;
       default:
         return null;
     }
@@ -132,27 +99,17 @@ const SdFiles = () => {
       file.size === '-1' ? `📁 ${file.shortname}` : `📄 ${file.shortname}`,
       file.size !== '-1' ? `${file.size} bytes` : 'Directory',
       <div style={styles.actions}>
-        <Button type="primary" onClick={() => openDialog('execute', file)}>
-          ▶️
-        </Button>
-        <Button type="secondary" onClick={() => openDialog('rename', file)}>
-          ✏️
-        </Button>
-        <Button type="outlined" onClick={() => openDialog('delete', file)}>
-          🗑️
-        </Button>
+        <Button type="primary" onClick={() => openDialog('execute', file)}>▶️</Button>
+        <Button type="secondary" onClick={() => openDialog('rename', file)}>✏️</Button>
+        <Button type="outlined" onClick={() => openDialog('delete', file)}>🗑️</Button>
       </div>,
     ]);
 
   return (
     <div style={styles.container}>
       <div style={styles.toolbar}>
-        <Button type="primary" onClick={fetchFiles}>
-          Refresh
-        </Button>
-        <Button type="secondary" onClick={() => openDialog('create-folder')}>
-          Create Folder
-        </Button>
+        <Button type="primary" onClick={fetchFiles}>Refresh</Button>
+        <Button type="secondary" onClick={() => openDialog('create-folder')}>Create Folder</Button>
       </div>
 
       {isLoading && <p style={styles.loading}>Loading files...</p>}
@@ -163,21 +120,16 @@ const SdFiles = () => {
       )}
 
       <Modal isOpen={dialog.isOpen} onClose={closeDialog}>
-        {isModalLoading ? <p style={styles.loading}>Loading...</p> : renderDialogContent()}
+        {isModalLoading ? <p style={styles.loading}>Processing...</p> : renderDialogContent()}
         <div style={styles.dialogActions}>
           <Button
             type="primary"
             onClick={handleDialogConfirm}
-            disabled={
-              (dialog.type === 'create-folder' && !newFolderName.trim()) ||
-              (dialog.type === 'rename' && !renameValue.trim())
-            }
+            disabled={dialog.type === 'create-folder' || dialog.type === 'rename' ? !inputValue.trim() : false}
           >
             Confirm
           </Button>
-          <Button type="secondary" onClick={closeDialog}>
-            Cancel
-          </Button>
+          <Button type="secondary" onClick={closeDialog}>Cancel</Button>
         </div>
       </Modal>
     </div>

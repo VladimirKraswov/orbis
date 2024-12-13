@@ -1,9 +1,7 @@
-import * as THREE from 'three';
 import { useEffect, useRef, useState } from 'preact/hooks';
+import * as THREE from 'three';
 import PropTypes from 'prop-types';
-import useThreeScene from './useThreeScene';
-import useMachineStatus from '../../hooks/useMachineStatus';
-import { styles } from './styles';
+
 import Toolbar from './components/Toolbar';
 import { Grid } from './components/3D/Grid';
 import { Lights } from './components/3D/Lights';
@@ -11,8 +9,13 @@ import { Spindle } from './components/3D/Spindle';
 import { HeightMapPlane } from './components/3D/HeightMapP';
 import HeightMapModal from './components/Modals/HeightMapModal';
 import { Path } from './components/3D/Path';
+
 import { useSendGCode } from './hooks/useSendGCode';
+import useThreeScene from './useThreeScene';
 import { useSettings } from '../../providers/Settings';
+import { useMachine } from '../../providers/machine';
+
+import { styles } from './styles';
 
 const Visualizer = () => {
   const heightMapMeshRef = useRef(null);
@@ -24,7 +27,7 @@ const Visualizer = () => {
 
   const { settings } = useSettings();
   const { sendGCode, isSending } = useSendGCode();
-  const { mPos } = useMachineStatus();
+  const { status: { mPos } } = useMachine();
 
   const { dimensions } = settings;
   

@@ -1,19 +1,19 @@
 import Router, { Route } from 'preact-router';
 
 import { HomePage, NotFoundPage } from '../pages';
-import { WebSocketProvider } from '../providers/WebSocketContext';
 import { SettingsProvider } from '../providers/Settings';
+import { MachineProvider } from '../providers/machine';
 
 
 const AppRoutes = () => (
   <SettingsProvider>
-    <WebSocketProvider>
+    <MachineProvider>
       <Router>
         <Route path="/" component={HomePage} />
         <Route path="/home" component={HomePage} />
         <Route default component={NotFoundPage} />
       </Router>
-    </WebSocketProvider>
+    </MachineProvider>
   </SettingsProvider>
 );
 

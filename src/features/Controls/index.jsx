@@ -1,17 +1,17 @@
 import { useState } from "react";
+
 import { JogRose } from "./components/JogRose";
 import { JogBar } from "./components/JogBar";
 import { VelocityControls } from "./components/VelocityControls";
-import { sendHttpCommand } from "../../api/apiCommands";
 import { styles } from "./styles";
 import { parseJogCommand } from "../../utils/commands";
 import PositionLabels from "./components/Positions";
-import useMachineStatus from "../../hooks/useMachineStatus";
+import { useMachine } from "../../providers/machine";
 
 const ControlPanel = () => {
+  const { status: { mPos, wPos }, sendCommand } = useMachine();
   const [xyVelocity, setXYVelocity] = useState(1000);
   const [zVelocity, setZVelocity] = useState(500);
-  const { mPos, wPos } = useMachineStatus(); 
   const handleXYVelocityChange = (value) => {
     console.log(`XY velocity updated to: ${value} mm/min`);
     setXYVelocity(value);
@@ -31,14 +31,14 @@ const ControlPanel = () => {
     };
 
     if (commandsMap[command]) {
-      await sendHttpCommand(commandsMap[command]);
+      await sendCommand(commandsMap[command]);
       return;
     }
 
     if (command.startsWith("Jog X") || command.startsWith("Jog Y")) {
       const jogCommand = parseJogCommand(command, xyVelocity, ["X", "Y"]);
       if (jogCommand) {
-        await sendHttpCommand(jogCommand);
+        await sendCommand(jogCommand);
       } else {
         console.error("Invalid XY jog command");
       }
@@ -48,7 +48,7 @@ const ControlPanel = () => {
     if (command.startsWith("Jog Z")) {
       const jogCommand = parseJogCommand(command, zVelocity, ["Z"]);
       if (jogCommand) {
-        await sendHttpCommand(jogCommand);
+        await sendCommand(jogCommand);
       } else {
         console.error("Invalid Z jog command");
       }
@@ -60,7 +60,7 @@ const ControlPanel = () => {
 
   const handleZeroButtonClick = async () => {
     const command = "G10 L20 P0 X0 Y0 Z0";
-    await sendHttpCommand(command);
+    await sendCommand(command);
   };
 
   const positions = [

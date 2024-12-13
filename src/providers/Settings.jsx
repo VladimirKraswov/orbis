@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, useEffect, useMemo } from "react";
-import useMachineStatus from "../hooks/useMachineStatus";
 
 const SettingsContext = createContext(null);
 
@@ -14,7 +13,6 @@ const defaultSettings = {
 };
 
 export const SettingsProvider = ({ children }) => {
-  // const { machineParams } = useMachineStatus();
   const [settings, setSettings] = useState(() => {
     const savedSettings = localStorage.getItem(SETTINGS_KEY);
     return savedSettings ? JSON.parse(savedSettings) : defaultSettings;

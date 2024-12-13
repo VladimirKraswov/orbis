@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import { sendHttpCommand } from "../../../api/apiCommands";
-import { useWebSocket } from "../../../providers/WebSocketContext";
+
 import { logWithTimestamp, validateGCode } from "../../../utils";
+import { useMachine } from "../../../providers/machine";
+
 
 const BUFFER_LIMIT = 5; 
 const TIMEOUT = 30000;
 
 export const useSendGCode = () => {
-  const { messages } = useWebSocket();
+  const { messages, sendCommand } = useMachine();
   const [isSending, setIsSending] = useState(false);
   const resolveOkRef = useRef(null);
   const [bufferSize, setBufferSize] = useState(0);
@@ -52,11 +53,11 @@ export const useSendGCode = () => {
   const sendInitializationCommands = async () => {
     try {
       logWithTimestamp("Sending initialization commands...");
-      await sendHttpCommand("$X");
+      await sendCommand("$X");
       logWithTimestamp("Alarm reset command sent.");
       await waitForOk();
 
-      await sendHttpCommand("$H");
+      await sendCommand("$H");
       logWithTimestamp("Homing command sent.");
       await waitForOk();
 
@@ -90,7 +91,7 @@ export const useSendGCode = () => {
         }
 
         // Отправка команды
-        await sendHttpCommand(lines[i]);
+        await sendCommand(lines[i]);
         setBufferSize((prev) => prev + 1); // Увеличиваем размер буфера
         logWithTimestamp(`Sent: ${lines[i]}`);
         await waitForOk();

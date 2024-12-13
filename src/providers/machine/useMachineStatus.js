@@ -1,47 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useWebSocket } from '../providers/WebSocketContext';
-import { sendHttpCommand } from '../api/apiCommands';
-import { useSettings } from '../providers/Settings';
 
-const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+import { sendCommand } from './api';
+import { parseCoordinates, parseMachineParameters, wait } from './utils';
+import { useSettings } from '../Settings';
 
-function parseCoordinates(part, prefix) {
-  if (!part || !part.startsWith(prefix)) return null;
-  try {
-    const coords = part.replace(`${prefix}:`, '').split(',');
-    return {
-      x: parseFloat(coords[0]) || 0,
-      y: parseFloat(coords[1]) || 0,
-      z: parseFloat(coords[2]) || 0,
-    };
-  } catch (err) {
-    console.error(`Error parsing coordinates for prefix ${prefix}:`, err);
-    return null;
-  }
-}
-
-function parseMachineParameters(message) {
-  try {
-    const lines = message.split('\n');
-    const parameters = {};
-
-    lines.forEach((line) => {
-      const match = line.match(/^\$(\d+)=([\d.]+)/);
-      if (match) {
-        const [, key, value] = match;
-        parameters[`$${key}`] = parseFloat(value);
-      }
-    });
-
-    return parameters;
-  } catch (error) {
-    console.error('Error parsing machine parameters:', error);
-    return {};
-  }
-}
-
-function useMachineStatus() {
-  const { messages } = useWebSocket();
+function useMachineStatus(messages) {
   const { settings } = useSettings();
 
   const [status, setStatus] = useState('Unknown');
@@ -59,9 +22,9 @@ function useMachineStatus() {
       try {
         await wait(1000);
         const results = await Promise.allSettled([
-          sendHttpCommand('[ESP800]'),
-          sendHttpCommand('$G'),
-          sendHttpCommand('$SS'),
+          sendCommand('[ESP800]'),
+          sendCommand('$G'),
+          sendCommand('$SS'),
         ]);
 
         const [esp800, gCode, ss] = results.map((result) => (result.status === 'fulfilled' ? result.value : null));
@@ -87,17 +50,17 @@ function useMachineStatus() {
 
       try {
         if (mode === 'disabled') {
-          await sendHttpCommand('$Report/Interval=0');
+          await sendCommand('$Report/Interval=0');
           console.log('Reports disabled.');
         } else if (mode === 'auto') {
-          await sendHttpCommand(`$Report/Interval=${autoInterval}`);
+          await sendCommand(`$Report/Interval=${autoInterval}`);
           console.log(`Auto report set to ${autoInterval} ms.`);
         } else if (mode === 'poll') {
-          await sendHttpCommand('$Report/Interval=0');
+          await sendCommand('$Report/Interval=0');
           console.log('Polling mode enabled.');
           intervalId = setInterval(async () => {
             try {
-              await sendHttpCommand('?');
+              await sendCommand('?');
             } catch (err) {
               console.error('Error during polling:', err);
               setError('Не удалось отправить команду');
