@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="48" fill="url(#gradient-bg)" stroke="#222" stroke-width="2" />
+  
+  <!-- Gear outline -->
+  <circle cx="50" cy="50" r="36" fill="none" stroke="#4A90E2" stroke-width="6" stroke-dasharray="8 4" />
+  
+  <!-- Toolpath design -->
+  <path d="M50 25 L65 45 L50 65 L35 45 Z" fill="url(#gradient-toolpath)" />
+  
+  <!-- Spindle center -->
+  <circle cx="50" cy="50" r="10" fill="#FFD700" stroke="#FF8C00" stroke-width="2" />
+
+  <!-- Definitions for gradients -->
+  <defs>
+    <linearGradient id="gradient-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#333" />
+      <stop offset="100%" stop-color="#555" />
+    </linearGradient>
+    <linearGradient id="gradient-toolpath" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFD700" />
+      <stop offset="100%" stop-color="#FF4500" />
+    </linearGradient>
+  </defs>
+</svg>
