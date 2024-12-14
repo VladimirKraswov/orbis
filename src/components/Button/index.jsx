@@ -1,15 +1,28 @@
-const Button = ({ style = {}, children, onClick, type = 'primary', disabled = false }) => {
+import PropTypes from 'prop-types';
+import './styles.css';
 
+const Button = ({ variant = 'primary', className = '', ...props }) => {
   return (
     <button
-      className={`button ${type} ${disabled ? 'disabled' : ''}`}
-      style={style}
-      onClick={onClick}
-      disabled={disabled}
+      className={`button button--${variant} ${props.disabled ? 'button--disabled' : ''} ${className}`.trim()}
+      {...props}
     >
-      {children}
+      {props.children}
     </button>
   );
+};
+
+Button.propTypes = {
+  variant: PropTypes.oneOf(['primary', 'secondary', 'outlined']),
+  className: PropTypes.string,
+  disabled: PropTypes.bool,
+  children: PropTypes.node.isRequired,
+};
+
+Button.defaultProps = {
+  variant: 'primary',
+  className: '',
+  disabled: false,
 };
 
 export default Button;

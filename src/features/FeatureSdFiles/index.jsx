@@ -1,13 +1,13 @@
 import { useState } from 'preact/hooks';
 
-import { Table, Modal, Button } from '../../components';
+import { Table, Modal, Button, FeatureContainer } from '../../components';
 
 import { useMachine } from '../../providers/machine';
 
 import { styles } from './styles';
 
 
-const SdFiles = () => {
+const FeatureSdFiles = () => {
   const [dialog, setDialog] = useState({ isOpen: false, type: '', data: null });
   const [inputValue, setInputValue] = useState('');
   const [isModalLoading, setIsModalLoading] = useState(false);
@@ -106,7 +106,7 @@ const SdFiles = () => {
     ]);
 
   return (
-    <div style={styles.container}>
+    <FeatureContainer title="SD Files">
       <div style={styles.toolbar}>
         <Button type="primary" onClick={fetchFiles}>Refresh</Button>
         <Button type="secondary" onClick={() => openDialog('create-folder')}>Create Folder</Button>
@@ -132,8 +132,8 @@ const SdFiles = () => {
           <Button type="secondary" onClick={closeDialog}>Cancel</Button>
         </div>
       </Modal>
-    </div>
+    </FeatureContainer>
   );
 };
 
-export default SdFiles;
+export default FeatureSdFiles;

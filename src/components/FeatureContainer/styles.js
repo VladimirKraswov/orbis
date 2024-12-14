@@ -27,8 +27,6 @@ export const styles = {
     color: '#e0e0e0',
     border: '1px solid #3a3a3a',
     padding: '16px',
-    overflowX: 'hidden',
-    overflowY: 'auto',
     borderRadius: '0 0 12px 12px',
   },
 };

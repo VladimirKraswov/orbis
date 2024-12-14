@@ -1,12 +1,4 @@
 export const styles = {
-  container: {
-    backgroundColor: '#1c1c1e',
-    color: '#e0e0e0',
-    fontFamily: 'Arial, sans-serif',
-    padding: '16px',
-    borderRadius: '8px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-  },
   toolbar: {
     display: 'flex',
     gap: '12px',

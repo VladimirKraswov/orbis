@@ -2,9 +2,9 @@ import PropTypes from 'prop-types';
 
 import { styles } from './styles';
 
-const Checkbox = ({ label, checked, onChange }) => {
+const Checkbox = ({ style = {}, label = '', checked, onChange }) => {
   return (
-    <div style={styles.container}>
+    <div style={{ ...styles.container, ...style}}>
       <label style={styles.label}>{label}</label>
       <input
         type="checkbox"
@@ -18,7 +18,8 @@ const Checkbox = ({ label, checked, onChange }) => {
 };
 
 Checkbox.propTypes = {
-  label: PropTypes.string.isRequired,
+  style: PropTypes.object,
+  label: PropTypes.string,
   checked: PropTypes.bool.isRequired,
   onChange: PropTypes.func.isRequired,
 };

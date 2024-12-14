@@ -7,8 +7,9 @@ import { styles } from "./styles";
 import { parseJogCommand } from "../../utils/commands";
 import PositionLabels from "./components/Positions";
 import { useMachine } from "../../providers/machine";
+import { FeatureContainer } from "../../components";
 
-const ControlPanel = () => {
+const FeatureControls = () => {
   const { info: { mPos, wPos }, sendCommand } = useMachine();
   const [xyVelocity, setXYVelocity] = useState(1000);
   const [zVelocity, setZVelocity] = useState(500);
@@ -91,22 +92,22 @@ const ControlPanel = () => {
   ];
 
   return (
-    <div style={styles.controlPanel}>
-        <div style={styles.jogContainer}>
-          <VelocityControls
-            xyVelocity={xyVelocity}
-            zVelocity={zVelocity}
-            onXYVelocityChange={handleXYVelocityChange}
-            onZVelocityChange={handleZVelocityChange}
-          />
-          <div style={styles.jog}>
-              <JogRose onCommand={handleChange} />
-              <JogBar onCommand={handleChange} />
-          </div>
+    <FeatureContainer title="Controls">
+      <div style={styles.jogContainer}>
+        <VelocityControls
+          xyVelocity={xyVelocity}
+          zVelocity={zVelocity}
+          onXYVelocityChange={handleXYVelocityChange}
+          onZVelocityChange={handleZVelocityChange}
+        />
+        <div style={styles.jog}>
+            <JogRose onCommand={handleChange} />
+            <JogBar onCommand={handleChange} />
         </div>
-        <PositionLabels positions={positions} onZero={handleZeroButtonClick} />
-    </div>
+      </div>
+      <PositionLabels positions={positions} onZero={handleZeroButtonClick} />
+    </FeatureContainer>
   );
 };
 
-export default ControlPanel;
+export default FeatureControls;

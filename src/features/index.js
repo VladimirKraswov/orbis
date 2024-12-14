@@ -1,6 +1,6 @@
-export { default as CommandConsole } from './CommandConsole';
-export { default as ControlPanel } from './Controls';
-export { default as Visualizer } from './Visualizer';
-export { default as Reports } from './Reports';
-export { default as SdFiles } from './SdFiles';
-export { default as Sender } from './Sender';
+export { default as FeatureControls } from './FeatureControls';
+export { default as FeatureCommands} from './FeatureCommands';
+export { default as FeatureVisualizer } from './FeatureVisualizer';
+export { default as FeatureReports } from './FeatureReports';
+export { default as FeatureSdFiles } from './FeatureSdFiles';
+export { default as FeatureSender } from './FeatureSender';

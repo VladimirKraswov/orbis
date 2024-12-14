@@ -1,41 +1,43 @@
-import { useState, useEffect, useRef } from 'preact/hooks';
-import styles from './styles';
+import { useState, useEffect, useRef, useCallback } from 'preact/hooks';
 
 import { useMachine } from '../../providers/machine';
+import { Button, Checkbox, FeatureContainer } from '../../components';
 
+import styles from './styles';
 
-const CommandConsole = () => {
-  const { messages, sendCommand, info: { initialData  } } = useMachine()
+const FeatureCommands = () => {
+  const { messages, sendCommand, info: { initialData } } = useMachine();
   const [commands, setCommands] = useState([]);
   const [currentCommand, setCurrentCommand] = useState('');
   const [isAutoscroll, setIsAutoscroll] = useState(true);
   const consoleRef = useRef(null);
 
-  // Автоскролл
-  useEffect(() => {
+  const handleAutoscroll = useCallback(() => {
     if (isAutoscroll && consoleRef.current) {
       consoleRef.current.scrollTop = consoleRef.current.scrollHeight;
     }
-  }, [commands, isAutoscroll]);
+  }, [isAutoscroll, commands]);
 
-  // Обновление лога WebSocket сообщениями
   useEffect(() => {
-    const filterMessage = (message) => (
-      message &&
-      !message.startsWith('PING:') &&
-      !message.startsWith('CURRENT_ID:') &&
-      !message.startsWith('ACTIVE_ID:')
-    );
+    handleAutoscroll();
+  }, [commands, handleAutoscroll]);
 
+  const filterMessage = useCallback((message) => (
+    message &&
+    !message.startsWith('PING:') &&
+    !message.startsWith('CURRENT_ID:') &&
+    !message.startsWith('ACTIVE_ID:')
+  ), []);
+
+  useEffect(() => {
     if (messages.length > 0) {
       const latestMessage = messages[messages.length - 1];
       if (filterMessage(latestMessage)) {
         setCommands((prev) => [...prev, `WS: ${latestMessage}`]);
       }
     }
-  }, [messages]);
+  }, [messages, filterMessage]);
 
-  // Обновление лога данными инициализации
   useEffect(() => {
     // @ts-ignore
     if (initialData && typeof initialData === 'object' && initialData.esp800) {
@@ -59,7 +61,7 @@ const CommandConsole = () => {
     setCurrentCommand('');
   };
 
-  const renderCommand = (cmd) => {
+  const renderCommand = useCallback((cmd) => {
     const stylesMap = {
       'WS:': { color: '#4fc3f7', fontWeight: 'bold' },
       'HTTP Sent:': { color: '#81c784', fontWeight: 'bold' },
@@ -72,28 +74,25 @@ const CommandConsole = () => {
     const style = Object.entries(stylesMap).find(([key]) => cmd.startsWith(key) || cmd.includes(key))?.[1] || stylesMap.default;
 
     return <span style={style}>{cmd}</span>;
-  };
+  }, []);
 
   return (
-    <div style={styles.container}>
-      {/* Верхняя панель */}
-      <div style={styles.settingsPanel}>
-        <label style={styles.label}>
-          <input
-            type="checkbox"
-            checked={isAutoscroll}
-            // @ts-ignore
+    <FeatureContainer
+      style={styles.container}
+      title="Commands"
+      headerElements={
+        <div style={styles.settingsPanel}>
+          <Checkbox
+            label="Autoscroll"
+            checked={isAutoscroll} 
             onChange={(e) => setIsAutoscroll(e.target.checked)}
-            style={styles.checkbox}
           />
-          Autoscroll
-        </label>
-        <button onClick={handleClear} style={styles.clearButton}>
-          Clear
-        </button>
-      </div>
-
-      {/* Область вывода */}
+          <Button style={styles.clearButton} variant="outlined" onClick={handleClear}>
+            Clear
+          </Button>
+        </div>
+      }
+    >
       <div ref={consoleRef} style={styles.consoleOutput}>
         {commands.map((cmd, index) => (
           <div key={index} style={styles.commandItem}>
@@ -102,7 +101,6 @@ const CommandConsole = () => {
         ))}
       </div>
 
-      {/* Ввод команды */}
       <form onSubmit={handleSubmit} style={styles.commandLine}>
         <input
           type="text"
@@ -112,12 +110,12 @@ const CommandConsole = () => {
           placeholder="Send Command..."
           style={styles.input}
         />
-        <button type="submit" style={styles.sendButton}>
+        <Button type="submit">
           Send
-        </button>
+        </Button>
       </form>
-    </div>
+    </FeatureContainer>
   );
 };
 
-export default CommandConsole;
+export default FeatureCommands;

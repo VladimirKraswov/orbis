@@ -1,8 +1,4 @@
 export const styles = {
-  controlPanel: {
-    display: "flex",
-    flexDirection: "column",
-  },
   jogContainer: {
     display: "flex",
     justifyContent: "space-between",

@@ -1,0 +1,100 @@
+:root {
+  --button-primary-bg-start: #4caf50;
+  --button-primary-bg-end: #388e3c;
+  --button-primary-hover-bg-start: #66bb6a;
+  --button-primary-hover-bg-end: #43a047;
+  --button-primary-active-bg-start: #2e7d32;
+  --button-primary-active-bg-end: #1b5e20;
+
+  --button-secondary-bg-start: #2196f3;
+  --button-secondary-bg-end: #1976d2;
+  --button-secondary-hover-bg-start: #42a5f5;
+  --button-secondary-hover-bg-end: #1e88e5;
+  --button-secondary-active-bg-start: #1565c0;
+  --button-secondary-active-bg-end: #0d47a1;
+
+  --button-outlined-color: #f0f0f0;
+  --button-outlined-hover-bg: rgba(255, 255, 255, 0.1);
+  --button-outlined-active-bg: rgba(255, 255, 255, 0.2);
+
+  --button-disabled-bg: #3a3a3a;
+  --button-disabled-text: #7a7a7a;
+
+  --button-border-radius: 8px;
+  --button-font-size: 14px;
+  --button-padding: 8px 16px;
+  --button-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  --button-shadow-hover: 0 6px 12px rgba(0, 0, 0, 0.5);
+  --button-shadow-active: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+/* Base button styles */
+button {
+  border-radius: var(--button-border-radius);
+  padding: var(--button-padding);
+  font-size: var(--button-font-size);
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #ffffff;
+  box-shadow: var(--button-shadow);
+}
+
+/* Primary variant */
+button.button--primary {
+  background: linear-gradient(145deg, var(--button-primary-bg-start), var(--button-primary-bg-end));
+  border: 1px solid var(--button-primary-bg-end);
+}
+
+button.button--primary:hover {
+  background: linear-gradient(145deg, var(--button-primary-hover-bg-start), var(--button-primary-hover-bg-end));
+  box-shadow: var(--button-shadow-hover);
+}
+
+button.button--primary:active {
+  background: linear-gradient(145deg, var(--button-primary-active-bg-start), var(--button-primary-active-bg-end));
+  box-shadow: var(--button-shadow-active);
+}
+
+/* Secondary variant */
+button.button--secondary {
+  background: linear-gradient(145deg, var(--button-secondary-bg-start), var(--button-secondary-bg-end));
+  border: 1px solid var(--button-secondary-bg-end);
+}
+
+button.button--secondary:hover {
+  background: linear-gradient(145deg, var(--button-secondary-hover-bg-start), var(--button-secondary-hover-bg-end));
+  box-shadow: var(--button-shadow-hover);
+}
+
+button.button--secondary:active {
+  background: linear-gradient(145deg, var(--button-secondary-active-bg-start), var(--button-secondary-active-bg-end));
+  box-shadow: var(--button-shadow-active);
+}
+
+/* Outlined variant */
+button.button--outlined {
+  background: transparent;
+  border: 1px solid var(--button-outlined-color);
+  color: var(--button-outlined-color);
+}
+
+button.button--outlined:hover {
+  background: var(--button-outlined-hover-bg);
+  box-shadow: var(--button-shadow-hover);
+}
+
+button.button--outlined:active {
+  background: var(--button-outlined-active-bg);
+  box-shadow: var(--button-shadow-active);
+}
+
+/* Disabled state */
+button:disabled,
+button.button--disabled {
+  background: var(--button-disabled-bg);
+  color: var(--button-disabled-text);
+  cursor: not-allowed;
+  box-shadow: none;
+}

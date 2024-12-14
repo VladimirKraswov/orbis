@@ -16,8 +16,9 @@ import { useSettings } from '../../providers/Settings';
 import { useMachine } from '../../providers/machine';
 
 import { styles } from './styles';
+import { FeatureContainer } from '../../components';
 
-const Visualizer = () => {
+const FeatureVisualizer = () => {
   const heightMapMeshRef = useRef(null);
   const [isFocused, setIsFocused] = useState(false);
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
@@ -106,29 +107,28 @@ const Visualizer = () => {
   };
 
   return (
-    <div
+    <FeatureContainer title="3D Visualizer"
       style={{
         outline: isFocused ? '2px solid blue' : 'none',
         ...styles.container,
         position: 'relative',
       }}
-    >
-      <Toolbar
+      headerElements={<Toolbar
         onGetHeightMap={handleGetHeightMap}
         onLoadGCode={handleLoadGCode}
-      />
-
+      />}
+    >
       <div ref={mountRef} style={styles.content} />
       <HeightMapModal
         isOpen={isHeightMapModalOpen}
         onClose={handleCloseHeightMapModal}
         onApply={handleApplyHeightMap}
       />
-    </div>
+    </FeatureContainer>
   );
 };
 
-Visualizer.propTypes = {
+FeatureVisualizer.propTypes = {
   rotation: PropTypes.shape({
     x: PropTypes.number.isRequired,
     y: PropTypes.number.isRequired,
@@ -139,4 +139,4 @@ Visualizer.propTypes = {
   }),
 };
 
-export default Visualizer;
+export default FeatureVisualizer;

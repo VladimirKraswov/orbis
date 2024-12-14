@@ -9,7 +9,6 @@ export const styles = {
   content: {
     width: '100%',
     height: '100%',
-    marginTop: '50px'
   },
   tooltipStyle: {
     visibility: 'hidden',

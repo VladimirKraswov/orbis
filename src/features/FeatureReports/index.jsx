@@ -5,9 +5,9 @@ import IntervalReportSettings from './components/IntervalReport';
 import { useMachine } from '../../providers/machine';
 
 import { styles } from './styles';
-import { ProgressBar, Tab, Tabs } from '../../components';
+import { FeatureContainer, ProgressBar, Status, Tab, Tabs } from '../../components';
 
-const Reports = () => {
+const FeatureReports = () => {
   const { messages } = useMachine();
   const [progress, setProgress] = useState(null);
   const [fileName, setFileName] = useState('');
@@ -39,7 +39,7 @@ const Reports = () => {
 
 
   return (
-    <div style={styles.container}>
+    <FeatureContainer title="GRBL Reports" headerElements={<Status/>}>
       {!!progress && 
         <ProgressBar
           style={styles.progressBar}
@@ -60,8 +60,8 @@ const Reports = () => {
           <p>Spindle Control.</p>
         </Tab>
       </Tabs>
-    </div>
+    </FeatureContainer>
   );
 };
 
-export default Reports;
+export default FeatureReports;
