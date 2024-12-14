@@ -20,6 +20,11 @@ const buttonGroups = [
     { command: '\x90', label: '', icon: icons.loop },
     { command: '\x93', label: 'S1%', icon: icons.arrow, rotate: 180 },
     { command: '\x91', label: 'S10%', icon: icons.doubleArrow, rotate: 180 }
+  ],
+  [
+    { command: '\x92', label: 'Spindle', icon: icons.circle },
+    { command: '\x94', label: 'Food', icon: icons.waterDrop },
+    { command: '\x91', label: 'Mist', icon: icons.bulb, rotate: 180 }
   ]
 ];
 

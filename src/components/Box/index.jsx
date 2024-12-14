@@ -9,7 +9,11 @@ const Box = forwardRef(({
   width = 'auto',
   height = 'auto',
   padding = 'var(--padding)',
-  margin = 'var(--margin)',
+  m = 'var(--margin)', // Combined margin shortcut
+  ml, // Margin left
+  mr, // Margin right
+  mt, // Margin top
+  mb, // Margin bottom
   backgroundColor = 'var(--color-background)',
   borderRadius = 'var(--border-radius)',
   border = 'none',
@@ -27,7 +31,11 @@ const Box = forwardRef(({
     height: fullHeight ? '100%' : height,
     overflowY: scrollable ? 'auto' : undefined,
     padding,
-    margin,
+    margin: m, // Apply the combined margin shortcut
+    marginLeft: ml ?? m, // Override specific margins if provided
+    marginRight: mr ?? m,
+    marginTop: mt ?? m,
+    marginBottom: mb ?? m,
     backgroundColor,
     borderRadius,
     border,
@@ -54,7 +62,11 @@ Box.propTypes = {
   width: PropTypes.string,
   height: PropTypes.string,
   padding: PropTypes.string,
-  margin: PropTypes.string,
+  m: PropTypes.string,
+  ml: PropTypes.string,
+  mr: PropTypes.string,
+  mt: PropTypes.string,
+  mb: PropTypes.string,
   backgroundColor: PropTypes.string,
   borderRadius: PropTypes.string,
   border: PropTypes.string,

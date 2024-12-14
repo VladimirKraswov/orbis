@@ -1,18 +1,6 @@
 export const styles = {
   positionContainer: {
-    display: 'flex',
-    width: 560,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    padding: '15px',
-    backgroundColor: 'var(--color-gradient-start)',
-    borderRadius: '8px',
     boxShadow: "5px 5px 10px var(--color-shadow-primary), -5px -5px 10px var(--color-shadow-secondary)",
-    color: 'var(--color-text)',
-    marginTop: '10px',
-  },
-  positionText: {
-
   },
   label: {
     padding: '5px 8px',

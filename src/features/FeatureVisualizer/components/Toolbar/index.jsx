@@ -2,7 +2,7 @@ import { useRef, useState } from "preact/hooks";
 import PropTypes from "prop-types";
 
 import SettingsModal from "../Modals/SettingsModal";
-import { IconButton } from "../../../../components";
+import { Box, IconButton } from "../../../../components";
 
 import { styles } from "./styles";
 
@@ -36,7 +36,7 @@ const Toolbar = ({ onLoadGCode, onGetHeightMap }) => {
   };
 
   return (
-    <div style={styles.container}>
+    <Box width="100%" background="#333" borderBottom="1px solid #444" padding="5px" gap="10px" alignItems="center">
       <IconButton
         icon="⚙"
         tooltip="Настройки"
@@ -64,7 +64,7 @@ const Toolbar = ({ onLoadGCode, onGetHeightMap }) => {
         isOpen={isSettingsModal}
         onClose={() => setIsSettingsModal(false)}
       />
-    </div>
+    </Box>
   );
 };
 

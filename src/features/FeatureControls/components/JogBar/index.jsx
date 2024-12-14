@@ -1,3 +1,4 @@
+import { Box } from "../../../../components";
 import { styles } from "./styles";
 
 export const JogBar = ({ onCommand }) => {
@@ -6,9 +7,9 @@ export const JogBar = ({ onCommand }) => {
   };
 
   return (
-    <div style={styles.jogBar}>
+    <Box style={styles.jogBar} column alignItems="center" ml="10px">
       {/* Верхняя часть */}
-      <div style={styles.jogBarButtons}>
+      <Box column gap="7px">
         <button
           style={styles.jogButton}
           onClick={() => handleCommand("Jog Z+ 10")}
@@ -30,13 +31,13 @@ export const JogBar = ({ onCommand }) => {
         >
           <div style={{ ...styles.jogButtonInner, ...styles.jogButtonZPlus01 }}>+0.1</div>
         </button>
-      </div>
+      </Box>
 
       {/* Разделитель */}
       <div style={styles.jogDivider}></div>
 
       {/* Нижняя часть */}
-      <div style={styles.jogBarButtons}>
+      <Box column gap="7px">
         <button
           style={styles.jogButton}
           onClick={() => handleCommand("Jog Z- 0.1")}
@@ -58,7 +59,7 @@ export const JogBar = ({ onCommand }) => {
         >
           <div style={{ ...styles.jogButtonInner, ...styles.jogButtonZMinus10 }}>-10</div>
         </button>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };

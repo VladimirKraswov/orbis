@@ -1,3 +1,4 @@
+import { Box } from "../../../../components";
 import { useSettings } from "../../../../providers/Settings";
 
 const IntervalReportSettings = () => {
@@ -24,15 +25,7 @@ const IntervalReportSettings = () => {
   const intervalReport = settings.intervalReport || { mode: 'disabled', value: 1000 };
 
   return (
-    <div
-      style={{
-        padding: '15px',
-        backgroundColor: '#2e2e2e',
-        borderRadius: '10px',
-        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.5)',
-        color: '#fff',
-      }}
-    >
+    <Box column padding="15px" backgroundColor="#2e2e2e" borderRadius="10px" color="#fff">
       <label style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold' }}>
         Interval Report Mode:
         <select
@@ -73,7 +66,7 @@ const IntervalReportSettings = () => {
           />
         </label>
       )}
-    </div>
+    </Box>
   );
 };
 

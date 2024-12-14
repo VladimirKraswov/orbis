@@ -43,12 +43,6 @@ export const styles = {
     display: 'flex',
     gap: '8px',
   },
-  dialogActions: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    gap: '12px',
-    marginTop: '16px',
-  },
   uploadProgress: {
     display: 'flex',
     flexDirection: 'column',

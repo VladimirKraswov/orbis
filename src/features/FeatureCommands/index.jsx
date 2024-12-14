@@ -81,7 +81,7 @@ const FeatureCommands = () => {
       style={styles.container}
       title="Commands"
       headerElements={
-        <div style={styles.settingsPanel}>
+        <Box alignItems="center">
           <Checkbox
             label="Autoscroll"
             checked={isAutoscroll} 
@@ -90,7 +90,7 @@ const FeatureCommands = () => {
           <Button style={styles.clearButton} variant="outlined" onClick={handleClear}>
             Clear
           </Button>
-        </div>
+        </Box>
       }
     >
       <Box fullHeight column>

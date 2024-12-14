@@ -1,10 +1,6 @@
 const styles = {
   container: {
   },
-  settingsPanel: {
-    display: 'flex',
-    alignItems: 'center',
-  },
   clearButton: {
     marginLeft: '10px',
   },

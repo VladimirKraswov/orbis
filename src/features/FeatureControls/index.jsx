@@ -7,7 +7,7 @@ import { styles } from "./styles";
 import { parseJogCommand } from "../../utils/commands";
 import PositionLabels from "./components/Positions";
 import { useMachine } from "../../providers/machine";
-import { FeatureContainer } from "../../components";
+import { Box, FeatureContainer } from "../../components";
 
 const FeatureControls = () => {
   const { info: { mPos, wPos }, sendCommand } = useMachine();
@@ -93,18 +93,18 @@ const FeatureControls = () => {
 
   return (
     <FeatureContainer title="Controls">
-      <div style={styles.jogContainer}>
+      <Box style={styles.jogContainer} justifyContent="space-between">
         <VelocityControls
           xyVelocity={xyVelocity}
           zVelocity={zVelocity}
           onXYVelocityChange={handleXYVelocityChange}
           onZVelocityChange={handleZVelocityChange}
         />
-        <div style={styles.jog}>
+        <Box style={styles.jog} padding="10px">
             <JogRose onCommand={handleChange} />
             <JogBar onCommand={handleChange} />
-        </div>
-      </div>
+        </Box>
+      </Box>
       <PositionLabels positions={positions} onZero={handleZeroButtonClick} />
     </FeatureContainer>
   );

@@ -1,11 +1,11 @@
 import PropTypes from "prop-types";
 
-import { CustomInput } from "../../../../components";
+import { Box, CustomInput } from "../../../../components";
 import { styles } from "./styles";
 
 export const VelocityControls = ({xyVelocity, zVelocity, onXYVelocityChange, onZVelocityChange }) => {
   return (
-    <div style={styles.container}>
+    <Box style={styles.container} width={200} height={120} column alignItems="center" gap="15px" padding="20px">
       <span style={styles.inputLabelUnit}>mm/min</span>
       {/* Управление скоростью XY */}
       <CustomInput
@@ -26,7 +26,7 @@ export const VelocityControls = ({xyVelocity, zVelocity, onXYVelocityChange, onZ
         value={zVelocity}
         onChange={onZVelocityChange}
       />
-    </div>
+    </Box>
   );
 };
 

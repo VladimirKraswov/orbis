@@ -1,6 +1,5 @@
-// HeightMapModal.js
 import { useState } from 'preact/hooks';
-import { Modal } from '../../../../components';
+import { Box, Button, Modal } from '../../../../components';
 
 const stepsOptions = [1, 2, 4, 6, 8, 10, 15, 20, 40, 100];
 
@@ -23,7 +22,7 @@ const HeightMapModal = ({ isOpen, onClose, onApply }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <h3 style={{ color: '#fff' }}>Создание карты высот</h3>
-      <div style={{ marginBottom: '10px', color: '#fff' }}>
+      <Box mb="10px" color="#fff">
         <label>
           Ширина (мм):&nbsp;
           <input
@@ -34,8 +33,8 @@ const HeightMapModal = ({ isOpen, onClose, onApply }) => {
             style={inputStyle}
           />
         </label>
-      </div>
-      <div style={{ marginBottom: '10px', color: '#fff' }}>
+      </Box>
+      <Box mb="10px" color="#fff">
         <label>
           Длина (мм):&nbsp;
           <input
@@ -46,20 +45,18 @@ const HeightMapModal = ({ isOpen, onClose, onApply }) => {
             style={inputStyle}
           />
         </label>
-      </div>
-      <div style={{ marginBottom: '10px', color: '#fff' }}>
+      </Box>
+      <Box mb="10px" color="#fff">
         <label>
           Шаг (мм):&nbsp;
-          <select value={step} onChange={(e) => setStep(e.target.
-// @ts-ignore
-          value)}>
+          <select value={step} onChange={(e) => setStep(e.target.value)}>
             {stepsOptions.map((opt) => (
               <option key={opt} value={opt}>{opt}</option>
             ))}
           </select>
         </label>
-      </div>
-      <button onClick={handleApply}>Создать</button>
+      </Box>
+      <Button onClick={handleApply}>Создать</Button>
     </Modal>
   );
 };

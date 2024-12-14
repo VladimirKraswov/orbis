@@ -197,7 +197,7 @@ const FeatureSdFiles = () => {
 
       <Modal isOpen={dialog.isOpen} onClose={closeDialog}>
         {isModalLoading ? <p style={styles.loading}>Processing...</p> : renderDialogContent()}
-        <div style={styles.dialogActions}>
+        <Box justifyContent="flex-end" gap="12px" marginTop="16px">
           <Button
             variant="primary"
             onClick={handleDialogConfirm}
@@ -206,7 +206,7 @@ const FeatureSdFiles = () => {
             Confirm
           </Button>
           <Button type="secondary" onClick={closeDialog}>Cancel</Button>
-        </div>
+        </Box>
       </Modal>
       <Modal isOpen={isUploading} onClose={() => {}}>
         <div style={styles.modalContent}>

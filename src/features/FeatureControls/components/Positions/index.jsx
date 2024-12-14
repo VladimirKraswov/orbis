@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 
 import { styles } from "./styles";
+import { Box } from "../../../../components";
 
 const PositionRow = ({ id, label, position, onZero }) => (
   <tr>
@@ -45,7 +46,7 @@ const SubPositionRow = ({ id, label, position }) => (
 );
 
 const PositionLabels = ({ positions, onZero }) => (
-  <div style={styles.positionContainer} id="positions_labels">
+  <Box style={styles.positionContainer} padding={15} mt={10} id="positions_labels">
     <button
       style={styles.zeroButton}
       onClick={() => onZero('XYZ')}
@@ -53,9 +54,8 @@ const PositionLabels = ({ positions, onZero }) => (
       Ø<span style={{ fontSize: "12px", marginLeft: "5px" }}>XYZ</span>
     </button>
     {positions.map((position) => (
-      <div
+      <Box
         key={position.id}
-        style={styles.positionText}
         id={position.displayId || ''}
       >
         <table style={styles.table}>
@@ -75,9 +75,9 @@ const PositionLabels = ({ positions, onZero }) => (
             )}
           </tbody>
         </table>
-      </div>
+      </Box>
     ))}
-  </div>
+  </Box>
 );
 
 PositionLabels.propTypes = {

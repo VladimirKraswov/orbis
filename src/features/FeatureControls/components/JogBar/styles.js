@@ -1,15 +1,4 @@
 export const styles = {
-  jogBar: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    marginLeft: "10px",
-  },
-  jogBarButtons: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "7px",
-  },
   jogButton: {
     border: "none",
     borderRadius: "3px",
