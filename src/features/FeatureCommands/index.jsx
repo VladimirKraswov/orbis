@@ -94,7 +94,7 @@ const FeatureCommands = () => {
       }
     >
       <Box fullHeight column>
-          <Box fullHeight column ref={consoleRef} scrollable>
+          <Box fullHeight fullWidth column ref={consoleRef} scrollable>
             {commands.map((cmd, index) => (
               <div key={index} style={styles.commandItem}>
                 {renderCommand(cmd)}
