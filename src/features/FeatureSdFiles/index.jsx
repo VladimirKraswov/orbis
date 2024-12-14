@@ -1,6 +1,6 @@
 import { useState } from 'preact/hooks';
 
-import { Table, Modal, Button, FeatureContainer } from '../../components';
+import { Table, Modal, Button, FeatureContainer, Box } from '../../components';
 
 import { useMachine } from '../../providers/machine';
 
@@ -99,18 +99,23 @@ const FeatureSdFiles = () => {
       file.size === '-1' ? `📁 ${file.shortname}` : `📄 ${file.shortname}`,
       file.size !== '-1' ? `${file.size} bytes` : 'Directory',
       <div style={styles.actions}>
-        <Button type="primary" onClick={() => openDialog('execute', file)}>▶️</Button>
-        <Button type="secondary" onClick={() => openDialog('rename', file)}>✏️</Button>
-        <Button type="outlined" onClick={() => openDialog('delete', file)}>🗑️</Button>
+        <Button variant="outlined" onClick={() => openDialog('execute', file)}>▶️</Button>
+        <Button variant="outlined" onClick={() => openDialog('rename', file)}>✏️</Button>
+        <Button variant="outlined" onClick={() => openDialog('delete', file)}>🗑️</Button>
       </div>,
     ]);
 
   return (
-    <FeatureContainer title="SD Files">
-      <div style={styles.toolbar}>
-        <Button type="primary" onClick={fetchFiles}>Refresh</Button>
-        <Button type="secondary" onClick={() => openDialog('create-folder')}>Create Folder</Button>
-      </div>
+    <FeatureContainer
+      title="SD Files"
+      contentStyle={styles.container}
+      headerElements={
+        <Box gap="1rem">
+          <Button variant="outlined" onClick={fetchFiles}>Refresh</Button>
+          <Button variant="secondary" onClick={() => openDialog('create-folder')}>Create Folder</Button>
+        </Box>
+      }
+    >
 
       {isLoading && <p style={styles.loading}>Loading files...</p>}
       {error && <p style={styles.error}>Error: {error}</p>}
@@ -123,7 +128,7 @@ const FeatureSdFiles = () => {
         {isModalLoading ? <p style={styles.loading}>Processing...</p> : renderDialogContent()}
         <div style={styles.dialogActions}>
           <Button
-            type="primary"
+            variant="primary"
             onClick={handleDialogConfirm}
             disabled={dialog.type === 'create-folder' || dialog.type === 'rename' ? !inputValue.trim() : false}
           >

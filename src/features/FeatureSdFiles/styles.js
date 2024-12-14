@@ -1,8 +1,8 @@
 export const styles = {
+  container: {
+    padding: 0,
+  },
   toolbar: {
-    display: 'flex',
-    gap: '12px',
-    marginBottom: '16px',
   },
   loading: {
     color: '#999',
@@ -15,7 +15,7 @@ export const styles = {
     textAlign: 'center',
   },
   input: {
-    width: 'calc(100% - 20px)', // Учитываем padding модального окна
+    width: 'calc(100% - 20px)',
     padding: '10px',
     margin: '10px 0',
     borderRadius: '6px',
@@ -23,7 +23,7 @@ export const styles = {
     backgroundColor: '#2b2b2b',
     color: '#e0e0e0',
     fontSize: '14px',
-    boxSizing: 'border-box', // Гарантирует, что padding и border не выходят за границы
+    boxSizing: 'border-box',
   },
   dialogHeader: {
     fontSize: '18px',
@@ -32,7 +32,7 @@ export const styles = {
   },
   dialog: {
     maxWidth: '400px',
-    width: '90%', // Уменьшаем ширину, чтобы контент всегда умещался
+    width: '90%',
     backgroundColor: '#2b2b2b',
     padding: '20px',
     borderRadius: '8px',
