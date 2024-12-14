@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'preact/hooks';
 
 import { useMachine } from '../../providers/machine';
-import { Button, Checkbox, FeatureContainer } from '../../components';
+import { Box, Button, Checkbox, FeatureContainer } from '../../components';
 
 import styles from './styles';
 
@@ -93,27 +93,29 @@ const FeatureCommands = () => {
         </div>
       }
     >
-      <div ref={consoleRef} style={styles.consoleOutput}>
-        {commands.map((cmd, index) => (
-          <div key={index} style={styles.commandItem}>
-            {renderCommand(cmd)}
-          </div>
-        ))}
-      </div>
+      <Box fullHeight column>
+          <Box fullHeight column ref={consoleRef} scrollable>
+            {commands.map((cmd, index) => (
+              <div key={index} style={styles.commandItem}>
+                {renderCommand(cmd)}
+              </div>
+            ))}
+         </Box>
 
-      <form onSubmit={handleSubmit} style={styles.commandLine}>
-        <input
-          type="text"
-          value={currentCommand}
-          // @ts-ignore
-          onChange={(e) => setCurrentCommand(e.target.value)}
-          placeholder="Send Command..."
-          style={styles.input}
-        />
-        <Button type="submit">
-          Send
-        </Button>
-      </form>
+        <form onSubmit={handleSubmit} style={styles.commandLine}>
+          <input
+            type="text"
+            value={currentCommand}
+            // @ts-ignore
+            onChange={(e) => setCurrentCommand(e.target.value)}
+            placeholder="Send Command..."
+            style={styles.input}
+          />
+          <Button type="submit">
+            Send
+          </Button>
+        </form>
+      </Box>
     </FeatureContainer>
   );
 };

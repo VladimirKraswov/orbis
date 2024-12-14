@@ -22,6 +22,7 @@ export const styles = {
     height: '40px',
   },
   content: {
+
     flex: 1,
     backgroundColor: '#1f1f1f',
     color: '#e0e0e0',

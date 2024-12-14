@@ -1,8 +1,5 @@
 const styles = {
   container: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
   },
   settingsPanel: {
     display: 'flex',
@@ -12,20 +9,21 @@ const styles = {
     marginLeft: '10px',
   },
   consoleOutput: {
-    flex: 1,
-    display: 'flex',
-    overflowY: 'auto',
-    padding: '8px',
     background: '#1e1e1e',
     color: '#ffffff',
-    borderBottom: '1px solid #444',
     fontFamily: 'monospace',
   },
+  commandItem: {
+    margin: '4px 0',
+    fontSize: '14px',
+    color: '#ffffff',
+  },
+
   commandLine: {
-    flexShrink: 0,
     display: 'flex',
+    width: '100%',
     borderTop: '1px solid #444',
-    padding: '8px',
+    marginTop: '8px',
     background: '#2b2b2b',
   },
   input: {
@@ -36,6 +34,7 @@ const styles = {
     color: '#ffffff',
     border: '1px solid #555',
     borderRadius: '4px',
+    margin: '4px 8px',
   },
   sendButton: {
     padding: '8px 16px',
@@ -44,11 +43,6 @@ const styles = {
     border: '1px solid #555',
     borderRadius: '4px',
     cursor: 'pointer',
-  },
-  commandItem: {
-    margin: '4px 0',
-    fontSize: '14px',
-    color: '#ffffff',
   },
 };
 
