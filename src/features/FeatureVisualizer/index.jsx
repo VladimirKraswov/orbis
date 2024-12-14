@@ -108,11 +108,6 @@ const FeatureVisualizer = () => {
 
   return (
     <FeatureContainer title="3D Visualizer"
-      style={{
-        outline: isFocused ? '2px solid blue' : 'none',
-        ...styles.container,
-        position: 'relative',
-      }}
       headerElements={<Toolbar
         onGetHeightMap={handleGetHeightMap}
         onLoadGCode={handleLoadGCode}

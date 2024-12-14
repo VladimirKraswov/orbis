@@ -233,3 +233,87 @@ export const executeFileApi = async (filePath, updateInterval = 50) => {
         throw error;
     }
 };
+
+/**
+ * Downloads a file from the server.
+ * @param {string} filePath - The file path to download.
+ */
+export const downloadFileApi = async (filePath) => {
+    const url = `${BASE_URL}/${encodeURIComponent(filePath)}`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+                'cache-control': 'no-cache',
+                'pragma': 'no-cache',
+            },
+            mode: 'cors',
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to download file: ${response.status}`);
+        }
+
+        const blob = await response.blob();
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filePath.split('/').pop();
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    } catch (error) {
+        console.error('Error downloading file:', error);
+        throw error;
+    }
+};
+
+/**
+ * Uploads a file to the server with progress tracking.
+ * @param {File} file - The file to upload.
+ * @param {string} path - The path where the file should be uploaded.
+ * @param {function} onProgress - Callback function for upload progress.
+ * @returns {Promise<Object>} - The server's response.
+ */
+export const uploadFileApi = (file, path = '/', onProgress) => {
+    const url = `${BASE_URL}/upload`;
+  
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        const formData = new FormData();
+    
+        formData.append('path', path);
+        formData.append('myfile[]', file, file.name);
+    
+        xhr.open('POST', url, true);
+    
+        xhr.upload.onprogress = (event) => {
+          if (event.lengthComputable && typeof onProgress === 'function') {
+            const progress = Math.round((event.loaded / event.total) * 100);
+            console.log('Progress:', progress); // Вывод прогресса
+            onProgress(progress);
+          }
+        };
+    
+        xhr.onload = () => {
+          if (xhr.status === 200) {
+            try {
+              const response = JSON.parse(xhr.responseText);
+              resolve(response);
+            } catch (error) {
+              reject(new Error('Failed to parse server response'));
+            }
+          } else {
+            reject(new Error(`Failed to upload file: ${xhr.status}`));
+          }
+        };
+    
+        xhr.onerror = () => {
+          reject(new Error('An error occurred during the file upload.'));
+        };
+    
+        xhr.send(formData);
+      });
+  };
+  

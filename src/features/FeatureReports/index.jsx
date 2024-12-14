@@ -6,6 +6,8 @@ import { useMachine } from '../../providers/machine';
 
 import { styles } from './styles';
 import { FeatureContainer, ProgressBar, Status, Tab, Tabs } from '../../components';
+import OverrideTab from './components/OverrideTab';
+import SpindleTab from './components/SpindleTab';
 
 const FeatureReports = () => {
   const { messages } = useMachine();
@@ -53,11 +55,11 @@ const FeatureReports = () => {
         </Tab>
         
         <Tab label="Override" title="Override Settings">
-          <p>Override controls go here.</p>
+          <OverrideTab />
         </Tab>
 
         <Tab label="Spindle" title="Spindle Control">
-          <p>Spindle Control.</p>
+          <SpindleTab />
         </Tab>
       </Tabs>
     </FeatureContainer>

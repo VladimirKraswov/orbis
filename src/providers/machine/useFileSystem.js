@@ -5,6 +5,8 @@ import {
   renameFileApi,
   deleteFileApi,
   executeFileApi,
+  downloadFileApi,
+  uploadFileApi,
 } from './api';
 import { HIDDEN_FILES } from './constants';
 
@@ -55,6 +57,17 @@ const useFileSystem = () => {
     await handleApiCall(executeFileApi, fileName);
   };
 
+  const downloadFile = async (fileName) => {
+    if (!fileName) return;
+    await handleApiCall(downloadFileApi, fileName);
+  };
+
+  const uploadFile = async (fileName) => {
+    if (!fileName) return;
+    const response = await handleApiCall(uploadFileApi, fileName);
+    setFiles(response?.files?.filter((file) => !HIDDEN_FILES.includes(file.name)) || []);
+  };
+
   useEffect(() => {
     fetchFiles();
   }, []);
@@ -68,6 +81,8 @@ const useFileSystem = () => {
     renameFile,
     deleteFile,
     executeFile,
+    downloadFile,
+    uploadFile,
   };
 };
 

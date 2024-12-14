@@ -1,56 +1,10 @@
 export const styles = {
-  pageContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100vh',
-    backgroundColor: '#1e1e1e',
-    color: '#cccccc',
-  },
-  gridContainer: {
+  container: {
+    width: '100%',
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(512px, 1fr))',
-    gridAutoRows: 'minmax(512px, 1fr)',
+    gridAutoRows: 'minmax(450px, 1fr)',
     gap: '16px',
     padding: '16px',
-    flex: 1,
-    overflow: 'auto',
-    boxSizing: 'border-box',
-  },
-  blockContentCentered: {
-    flex: 1,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100%',
-  },
-  logItem: {
-    margin: '4px 0',
-    color: '#aaaaaa',
-  },
-  header: {
-
-  },
-  alarmButton: {
-    height: '32px',
-    width: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#ff4c4c',
-    color: '#fff',
-    border: '2px solid #d32f2f',
-    borderRadius: '12px',
-    cursor: 'pointer',
-    fontWeight: 'bold',
-    fontSize: '14px',
-    textTransform: 'uppercase',
-    boxShadow: '0 6px 20px rgba(255, 76, 76, 0.7)',
-  },
-  progressContainer: {
-    width: '100%',
-    padding: '10px',
-    backgroundColor: '#292929',
-    borderRadius: '8px',
-    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.3)',
   },
 };

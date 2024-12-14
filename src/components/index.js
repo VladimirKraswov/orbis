@@ -11,3 +11,5 @@ export { default as Tooltip } from './Tooltip';
 export { Tabs, Tab } from './Tabs';
 export { default as Status } from './Status';
 export { default as ProgressBar } from './ProgressBar';
+export { default as SvgIcon } from './SvgIcon';
+export { default as DotMenu } from './DotMenu';

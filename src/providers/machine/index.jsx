@@ -37,7 +37,7 @@ const MachineProvider = ({ children }) => {
   const [messages, setMessages] = useState([]);
   const websocketRef = useRef(null);
 
-  const { files, isLoading, error, fetchFiles, createFolder, renameFile, deleteFile, executeFile } = useFileSystem();
+  const { files, isLoading, error, fetchFiles, createFolder, renameFile, deleteFile, executeFile, downloadFile, uploadFile } = useFileSystem();
   const { mPos, wPos, feedSpindle, wco, status, error: statusError, initialData, isInitializing, machineParameters } = useMachineInfo(messages); 
 
   // WebSocket подключение
@@ -84,8 +84,10 @@ const MachineProvider = ({ children }) => {
       renameFile,
       deleteFile,
       executeFile,
+      downloadFile,
+      uploadFile,
     }),
-    [files, isLoading, error, fetchFiles, createFolder, renameFile, deleteFile, executeFile]
+    [files, isLoading, error, fetchFiles, createFolder, renameFile, deleteFile, executeFile, downloadFile, uploadFile]
   );
 
   const info = useMemo(

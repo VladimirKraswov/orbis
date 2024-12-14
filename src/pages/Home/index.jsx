@@ -1,3 +1,4 @@
+import { Box } from '../../components';
 import {
   FeatureControls,
   FeatureCommands,
@@ -12,16 +13,16 @@ import { styles } from './styles';
 const HomePage = () => {
 
   return (
-    <div style={styles.pageContainer}>
-      <div style={styles.gridContainer}>
-          <FeatureControls />
-          <FeatureVisualizer />
-          <FeatureCommands />
-          <FeatureReports />
-          <FeatureSdFiles />
-          <FeatureSender />
+    <Box height="100vh" scrollable>
+      <div style={styles.container}>
+        <FeatureControls />
+        <FeatureVisualizer />
+        <FeatureCommands />
+        <FeatureReports />
+        <FeatureSdFiles />
+        <FeatureSender />
       </div>
-    </div>
+    </Box>
   );
 };
 
