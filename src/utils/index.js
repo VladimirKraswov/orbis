@@ -40,5 +40,33 @@ export const normalizePath = (basePath, subPath) => {
   return result.replace(/\/$/, '') || '/';
 };
 
+export const checkIfBinary = (buffer) => {
+  const textSample = new TextDecoder().decode(buffer.slice(0, 256));
+  const nonPrintableChars = textSample.split('').filter((c) => c.charCodeAt(0) < 32 && c.charCodeAt(0) !== 10 && c.charCodeAt(0) !== 13);
+
+  return nonPrintableChars.length > 0;
+}
+
+export const decodeBinaryGCode = (binaryData) => {
+  let result = '';
+  let i = 0;
+
+  while (i < binaryData.length) {
+    const command = binaryData[i];
+    if (command === 0x80) {
+      // Например, команда специального формата
+      const length = binaryData[i + 1];
+      const message = new TextDecoder().decode(binaryData.slice(i + 2, i + 2 + length));
+      result += `(${message})\n`;
+      i += 2 + length;
+    } else {
+      // Обычные команды
+      result += String.fromCharCode(command);
+      i++;
+    }
+  }
+
+  return result;
+}
 
 

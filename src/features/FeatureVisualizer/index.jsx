@@ -17,6 +17,7 @@ import { useMachine } from '../../providers/machine';
 
 import { styles } from './styles';
 import { FeatureContainer } from '../../components';
+import { addGCodeContourToGrid } from './utils';
 
 const FeatureVisualizer = () => {
   const heightMapMeshRef = useRef(null);
@@ -54,7 +55,7 @@ const FeatureVisualizer = () => {
       Lights(sceneRef.current);
       spindleRef.current = Spindle(axisGroupRef.current);
 
-      pathRef.current = new Path(axisGroupRef.current, 0xFF4500, 5);
+      pathRef.current = new Path(axisGroupRef.current, 0x000000, 2);
     }
 
     if (cameraRef.current) {
@@ -71,9 +72,9 @@ const FeatureVisualizer = () => {
   
       if (settings.showPath && pathRef.current) {
         pathRef.current.addPoint(
-          new THREE.Vector3(mPos.x, mPos.y, settings.considerZ ? mPos.z : 0)
+          new THREE.Vector3(mPos.x, mPos.y, settings.considerZ ? mPos.z : 0.3)
         );
-        pathRef.current.flushBuffer(); // Обновляем путь
+        //pathRef.current.flushBuffer();
       }
     }
   }, [mPos, settings]);
@@ -99,11 +100,30 @@ const FeatureVisualizer = () => {
     setIsHeightMapModalOpen(true);
   };
 
+  function clearGCodeContours(axisGroupRef) {
+    if (!axisGroupRef.current) return;
+    
+    axisGroupRef.current.children = axisGroupRef.current.children.filter(
+      (child) => !(child.isLine && child.material.color.getHex() === 0xff4500)
+    );
+  }
+  
+
+  const addGCodeContour = (gcode) => {
+    if (!axisGroupRef.current) {
+      console.error('Группа осей (axisGroupRef) не инициализирована');
+      return;
+    }
+  
+    const baseZ = 0.2; // Уровень Z для контура
+    clearGCodeContours(axisGroupRef);
+    addGCodeContourToGrid(gcode, axisGroupRef, baseZ);
+  };
+
   const handleLoadGCode = async (loadedGCode) => {
     console.log('G-code loaded:', loadedGCode);
-
     setGCode(loadedGCode);
-    sendGCode(loadedGCode);
+    addGCodeContour(loadedGCode);
   };
 
   return (
@@ -111,6 +131,7 @@ const FeatureVisualizer = () => {
       headerElements={<Toolbar
         onGetHeightMap={handleGetHeightMap}
         onLoadGCode={handleLoadGCode}
+        onRunGCode={() => sendGCode(loadedGCode)}
       />}
     >
       <div ref={mountRef} style={styles.content} />

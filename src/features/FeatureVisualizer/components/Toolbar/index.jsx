@@ -5,27 +5,42 @@ import SettingsModal from "../Modals/SettingsModal";
 import { Box, IconButton } from "../../../../components";
 
 import { styles } from "./styles";
+import { checkIfBinary, decodeBinaryGCode } from "../../../../utils";
 
-const Toolbar = ({ onLoadGCode, onGetHeightMap }) => {
+const Toolbar = ({ onLoadGCode, onGetHeightMap, onRunGCode }) => {
   const [isSettingsModal, setIsSettingsModal] = useState(false)
   const fileInputRef = useRef(null);
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
-    if (file) {
-      console.log("Файл выбран:", file.name);
-      try {
-        const content = await file.text();
-        console.log("Файл загружен, содержимое:", content.slice(0, 100));
-        onLoadGCode(content);
-      } catch (error) {
-        console.error("Ошибка при чтении файла:", error);
-      }
-    } else {
+    if (!file) {
       console.error("Файл не выбран");
+      return;
+    }
+  
+    console.log("Файл выбран:", file.name);
+  
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const isBinary = checkIfBinary(arrayBuffer);
+  
+      let gcode;
+      if (isBinary) {
+        gcode = decodeBinaryGCode(new Uint8Array(arrayBuffer));
+        console.log("G-code загружен, содержимое:", gcode.slice(0, 100));
+        
+
+      } else {
+        gcode = await file.text();
+      }
+  
+      console.log("G-code загружен:", gcode.slice(0, 100));
+      onLoadGCode(gcode);
+    } catch (error) {
+      console.error("Ошибка при загрузке файла:", error);
     }
   };
-
+  
   const triggerFileInput = () => {
     if (fileInputRef.current) {
       console.log("Имитируем клик по input");
@@ -38,19 +53,24 @@ const Toolbar = ({ onLoadGCode, onGetHeightMap }) => {
   return (
     <Box width="100%" background="#333" borderBottom="1px solid #444" pd="5px" gap="10px" alignItems="center">
       <IconButton
-        icon="⚙"
+        icon="⚙️"
         tooltip="Настройки"
         onClick={() => setIsSettingsModal(true)}
       />
       <IconButton
-        icon="⛰"
+        icon="📦"
+        tooltip="Выполнить G-код"
+        onClick={onRunGCode}
+      />
+      <IconButton
+        icon="🗺"
         tooltip="Получить карту высот"
         onClick={onGetHeightMap}
       />
       <IconButton
         icon="G"
         tooltip="Загрузить G-код"
-        onClick={triggerFileInput}
+        onClick={() => triggerFileInput()}
       />
       <input
         type="file"
@@ -71,6 +91,7 @@ const Toolbar = ({ onLoadGCode, onGetHeightMap }) => {
 Toolbar.propTypes = {
   onLoadGCode: PropTypes.func.isRequired,
   onGetHeightMap: PropTypes.func.isRequired,
+  onRunGCode: PropTypes.func.isRequired,
 };
 
 export default Toolbar;

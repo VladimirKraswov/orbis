@@ -28,3 +28,43 @@ export function shouldAddPoint(buffer, newPoint, distanceThreshold) {
   const lastPoint = buffer[buffer.length - 1];
   return lastPoint.distanceTo(newPoint) > distanceThreshold; // Add if distance is sufficient
 }
+
+export function addGCodeContourToGrid(gcode, axisGroupRef, baseZ = 0) {
+  if (!axisGroupRef.current) {
+    console.error('Группа осей (axisGroupRef) не инициализирована');
+    return;
+  }
+
+  const points = parseGCode(gcode, baseZ);
+  const line = createLine(points, 0xff4500); // Оранжевый цвет для линии
+  axisGroupRef.current.add(line);
+  console.log('Контур G-кода добавлен на поверхность сетки');
+}
+
+export function parseGCode(gcode, baseZ = 0) {
+  const lines = gcode.split('\n');
+  const points = [];
+  let currentPosition = { x: 0, y: 0, z: baseZ };
+
+  for (const line of lines) {
+    if (line.startsWith('G0') || line.startsWith('G1')) {
+      const matchX = /X([-\d.]+)/.exec(line);
+      const matchY = /Y([-\d.]+)/.exec(line);
+      const matchZ = /Z([-\d.]+)/.exec(line);
+
+      if (matchX) currentPosition.x = parseFloat(matchX[1]);
+      if (matchY) currentPosition.y = parseFloat(matchY[1]);
+      if (matchZ) currentPosition.z = baseZ; // Устанавливаем Z на уровне сетки
+
+      points.push(new THREE.Vector3(currentPosition.x, currentPosition.y, currentPosition.z));
+    }
+  }
+  return points;
+}
+
+export function createLine(points, color = 0x00ff00) {
+  const geometry = new THREE.BufferGeometry().setFromPoints(points);
+  const material = new THREE.LineBasicMaterial({ color });
+  return new THREE.Line(geometry, material);
+}
+
