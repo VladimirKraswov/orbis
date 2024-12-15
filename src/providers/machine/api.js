@@ -137,7 +137,7 @@ export const fetchFilesApi = async (path = '/') => {
         if (!response.ok) {
             throw new Error(`Failed to fetch files: ${response.status}`);
         }
-        return (await response.json()).files;
+        return await response.json();
     } catch (error) {
         console.error(`Error fetching files: ${error}`);
         throw error;

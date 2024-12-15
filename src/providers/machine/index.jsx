@@ -10,11 +10,14 @@ const MachineContext = createContext({
     files: [],
     isLoading: false,
     error: null,
+    status: null,
     fetchFiles: async () => {},
-    createFolder: async (folderName) => {},
-    renameFile: async (fileName, newFilename) => {},
-    deleteFile: async (fileName) => {},
-    executeFile: async (fileName) => {},
+    createFolder: async () => {},
+    renameFile: async () => {},
+    deleteFile: async () => {},
+    executeFile: async () => {},
+    downloadFile: async () => {},
+    uploadFile: async () => {},
   },
   info: {
     mPos: { x: 0, y: 0 },
@@ -28,8 +31,8 @@ const MachineContext = createContext({
     isInitializing: false,
     machineParameters: { x: 0, y: 0, z: 0 },
   },
-  sendMessage: (message) => {},
-  sendCommand: (command) => {},
+  sendMessage: () => {},
+  sendCommand: () => {},
   unlock: () => {},
 });
 
@@ -37,23 +40,19 @@ const MachineProvider = ({ children }) => {
   const [messages, setMessages] = useState([]);
   const websocketRef = useRef(null);
 
-  const { files, isLoading, error, fetchFiles, createFolder, renameFile, deleteFile, executeFile, downloadFile, uploadFile } = useFileSystem();
-  const { mPos, wPos, feedSpindle, wco, status, error: statusError, initialData, isInitializing, machineParameters } = useMachineInfo(messages); 
+  const fileSystem = useFileSystem();
+  const machineInfo = useMachineInfo(messages);
 
-  // WebSocket подключение
   useEffect(() => {
-    websocketRef.current = connectWebSocket(
+    const websocket = connectWebSocket(
       () => setMessages((prev) => [...prev, 'WebSocket: Connected']),
       (data) => setMessages((prev) => [...prev, data.trim()]),
       (error) => setMessages((prev) => [...prev, `WebSocket: Error: ${error}`]),
       () => setMessages((prev) => [...prev, 'WebSocket: Disconnected'])
     );
+    websocketRef.current = websocket;
 
-    return () => {
-      if (websocketRef.current) {
-        websocketRef.current.close();
-      }
-    };
+    return () => websocket?.close();
   }, []);
 
   const sendMessage = (message) => {
@@ -73,40 +72,20 @@ const MachineProvider = ({ children }) => {
     }
   };
 
-  // Структурируем файловую систему
   const fs = useMemo(
     () => ({
-      files,
-      isLoading,
-      error,
-      fetchFiles,
-      createFolder,
-      renameFile,
-      deleteFile,
-      executeFile,
-      downloadFile,
-      uploadFile,
+      ...fileSystem,
     }),
-    [files, isLoading, error, fetchFiles, createFolder, renameFile, deleteFile, executeFile, downloadFile, uploadFile]
+    [fileSystem]
   );
 
   const info = useMemo(
     () => ({
-      mPos,
-      wPos,
-      feedSpindle,
-      wco,
-      error,
-      status,
-      statusError,
-      initialData,
-      isInitializing,
-      machineParameters,
+      ...machineInfo,
     }),
-    [mPos, wPos, feedSpindle, wco, error, status, initialData, statusError, isInitializing, machineParameters]
+    [machineInfo]
   );
 
-  // Контекстное значение
   const contextValue = useMemo(
     () => ({
       messages,
@@ -116,7 +95,7 @@ const MachineProvider = ({ children }) => {
       sendCommand,
       unlock,
     }),
-    [messages, fs, info, unlock]
+    [messages, fs, info]
   );
 
   return <MachineContext.Provider value={contextValue}>{children}</MachineContext.Provider>;
