@@ -25,7 +25,7 @@ const IntervalReportSettings = () => {
   const intervalReport = settings.intervalReport || { mode: 'disabled', value: 1000 };
 
   return (
-    <Box column padding="15px" backgroundColor="#2e2e2e" borderRadius="10px" color="#fff">
+    <Box column pd="15px" backgroundColor="#2e2e2e" borderRadius="10px" color="#fff">
       <label style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold' }}>
         Interval Report Mode:
         <select

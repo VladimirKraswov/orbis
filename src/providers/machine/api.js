@@ -277,43 +277,52 @@ export const downloadFileApi = async (filePath) => {
  * @returns {Promise<Object>} - The server's response.
  */
 export const uploadFileApi = (file, path = '/', onProgress) => {
+    if (!path) {
+      throw new Error('Invalid path: Path must be defined.');
+    }
+  
     const url = `${BASE_URL}/upload`;
   
     return new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        const formData = new FormData();
-    
-        formData.append('path', path);
-        formData.append('myfile[]', file, file.name);
-    
-        xhr.open('POST', url, true);
-    
-        xhr.upload.onprogress = (event) => {
-          if (event.lengthComputable && typeof onProgress === 'function') {
-            const progress = Math.round((event.loaded / event.total) * 100);
-            console.log('Progress:', progress); // Вывод прогресса
-            onProgress(progress);
+      const xhr = new XMLHttpRequest();
+      const formData = new FormData();
+  
+      formData.append('path', path); // Передаем корректный путь
+      formData.append('myfile[]', file, file.name);
+  
+      console.log(`Uploading file to: ${path}`); // Лог для проверки пути
+  
+      xhr.open('POST', url, true);
+  
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable && typeof onProgress === 'function') {
+          const progress = Math.round((event.loaded / event.total) * 100);
+          console.log(`Upload progress: ${progress}%`);
+          onProgress(progress);
+        }
+      };
+  
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          try {
+            const response = JSON.parse(xhr.responseText);
+            resolve(response);
+          } catch (error) {
+            reject(new Error('Failed to parse server response'));
           }
-        };
-    
-        xhr.onload = () => {
-          if (xhr.status === 200) {
-            try {
-              const response = JSON.parse(xhr.responseText);
-              resolve(response);
-            } catch (error) {
-              reject(new Error('Failed to parse server response'));
-            }
-          } else {
-            reject(new Error(`Failed to upload file: ${xhr.status}`));
-          }
-        };
-    
-        xhr.onerror = () => {
-          reject(new Error('An error occurred during the file upload.'));
-        };
-    
-        xhr.send(formData);
-      });
+        } else {
+          reject(new Error(`Failed to upload file: ${xhr.status}`));
+        }
+      };
+  
+      xhr.onerror = () => {
+        reject(new Error('An error occurred during the file upload.'));
+      };
+  
+      xhr.send(formData);
+    });
   };
+  
+  
+  
   

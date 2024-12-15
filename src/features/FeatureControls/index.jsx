@@ -100,7 +100,7 @@ const FeatureControls = () => {
           onXYVelocityChange={handleXYVelocityChange}
           onZVelocityChange={handleZVelocityChange}
         />
-        <Box style={styles.jog} padding="10px">
+        <Box style={styles.jog} pd="10px">
             <JogRose onCommand={handleChange} />
             <JogBar onCommand={handleChange} />
         </Box>

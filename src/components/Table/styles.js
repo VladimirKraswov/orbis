@@ -1,4 +1,4 @@
-export const tableStyles = {
+export const styles = {
   container: {
     maxHeight: '400px',
     overflowY: 'auto',
@@ -11,12 +11,8 @@ export const tableStyles = {
     borderCollapse: 'collapse',
     color: '#e0e0e0',
   },
-  headerContainer: {
-    position: 'sticky',
-    top: 0,
+  headerRow: {
     backgroundColor: '#2b2b2b',
-    zIndex: 1,
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.5)',
   },
   header: {
     padding: '10px',
@@ -28,14 +24,11 @@ export const tableStyles = {
   },
   row: {
     borderBottom: '1px solid #333',
-    backgroundColor: '#1e1e1e',
     transition: 'background-color 0.3s',
+    cursor: 'pointer',
   },
   cell: {
     padding: '10px',
     color: '#d0d0d0',
-  },
-  rowHover: {
-    backgroundColor: '#2a2a2a',
   },
 };

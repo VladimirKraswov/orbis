@@ -10,7 +10,7 @@ const MemoryStatus = ({ total, used, occupation }) => {
   return (
     <Box
       fullWidth
-      padding={styles.container.padding}
+      pd={styles.container.padding}
       backgroundColor={styles.container.backgroundColor}
       borderRadius={styles.container.borderRadius}
       style={{

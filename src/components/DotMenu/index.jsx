@@ -1,29 +1,24 @@
 import { useState, useRef, useEffect } from 'preact/hooks';
 import PropTypes from 'prop-types';
-import styles from './styles';
 import './styles.css';
+import Box from '../Box';
 
-/**
- * A reusable DotMenu component for displaying a dropdown menu with options.
- * @param {Object[]} options - An array of menu options.
- * @param {string} options[].label - The label of the menu option.
- * @param {JSX.Element} options[].icon - The icon for the menu option.
- * @param {function} options[].onClick - The function to call when the option is clicked.
- * @param {Object} style - Custom styles for the menu.
- */
 const DotMenu = ({ options, style }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
 
-  const toggleMenu = () => setIsOpen((prev) => !prev);
+  const handleToggle = (e) => {
+    e.stopPropagation();
+    setIsOpen((prev) => !prev);
+  };
+
+  const handleClickOutside = (event) => {
+    if (menuRef.current && !menuRef.current.contains(event.target)) {
+      setIsOpen(false);
+    }
+  };
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
@@ -33,29 +28,39 @@ const DotMenu = ({ options, style }) => {
     };
   }, [isOpen]);
 
+  const handleOptionClick = (onClick, e) => {
+    e.stopPropagation();
+    onClick();
+    setIsOpen(false);
+  };
+
   return (
-    <div ref={menuRef} style={{ position: 'relative', ...style }}>
-      <button style={styles.trigger} onClick={toggleMenu} aria-expanded={isOpen} aria-label="Toggle menu">
+    <Box ref={menuRef} style={{ position: 'relative', ...style }} className="dot-menu-container">
+      <button
+        className="dot-menu-trigger"
+        onClick={handleToggle}
+        aria-expanded={isOpen}
+        aria-label="Toggle menu"
+      >
         •••
       </button>
       {isOpen && (
-        <div style={styles.menu} className="dot-menu">
+        <Box column className="dot-menu" backgroundColor="#1e1e1e" pd="0.1rem" border="1px solid #444" br="8px" boxShadow="0 4px 12px rgba(0, 0, 0, 0.15)">
           {options.map(({ label, icon, onClick }, index) => (
-            <div
-              key={index}
+            <Box
+              key={label}
               className="dot-menu-item"
-              onClick={() => {
-                onClick();
-                setIsOpen(false);
-              }}
+              alignItems="center"
+              gap="0.5rem"
+              onClick={(e) => handleOptionClick(onClick, e)}
             >
-              {icon && <span style={styles.icon}>{icon}</span>}
-              <span>{label}</span>
-            </div>
+              {icon && <Box className="dot-menu-icon">{icon}</Box>}
+              <span className="dot-menu-label">{label}</span>
+            </Box>
           ))}
-        </div>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };
 

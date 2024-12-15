@@ -5,7 +5,7 @@ import { styles } from "./styles";
 
 export const VelocityControls = ({xyVelocity, zVelocity, onXYVelocityChange, onZVelocityChange }) => {
   return (
-    <Box style={styles.container} width={200} height={120} column alignItems="center" gap="15px" padding="20px">
+    <Box style={styles.container} width={200} height={120} column alignItems="center" gap="15px" pd="20px">
       <span style={styles.inputLabelUnit}>mm/min</span>
       {/* Управление скоростью XY */}
       <CustomInput

@@ -36,7 +36,7 @@ const Toolbar = ({ onLoadGCode, onGetHeightMap }) => {
   };
 
   return (
-    <Box width="100%" background="#333" borderBottom="1px solid #444" padding="5px" gap="10px" alignItems="center">
+    <Box width="100%" background="#333" borderBottom="1px solid #444" pd="5px" gap="10px" alignItems="center">
       <IconButton
         icon="⚙"
         tooltip="Настройки"
