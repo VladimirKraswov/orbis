@@ -9,6 +9,7 @@ import {
   uploadFileApi,
 } from './api';
 import { HIDDEN_FILES } from './constants';
+import { normalizePath } from "../../utils";
 
 const useFileSystem = () => {
   const [files, setFiles] = useState([]);
@@ -21,9 +22,6 @@ const useFileSystem = () => {
     occupation: '0%',
     state: 'Unknown',
   });
-
-  console.log('Status:', status);
-  
 
   const handleApiCall = async (apiCall, ...args) => {
     setIsLoading(true);
@@ -41,20 +39,23 @@ const useFileSystem = () => {
 
   const updateStatus = (data) => {
     setStatus({
-      path: data?.path?.startsWith('/') ? data.path : '/',
+      path:  data.path || '/',
       total: data?.total || '0 MB',
       used: data?.used || '0 MB',
       occupation: `${data?.occupation || 0}%`,
       state: data?.status || 'Unknown',
     });
   };
-  
 
   const fetchFiles = async (path = status.path) => {
-    const response = await handleApiCall(fetchFilesApi, path);
+    const normalizedPath = normalizePath('/', path);
+    console.log('Fetching files for path:', normalizedPath);
+  
+    const response = await handleApiCall(fetchFilesApi, normalizedPath);
     setFiles(response?.files?.filter((file) => !HIDDEN_FILES.includes(file.name)) || []);
-    updateStatus(response);
+    updateStatus({ ...response, path: normalizedPath });
   };
+  
 
   const createFolder = async (folderName) => {
     if (!folderName.trim()) return;
@@ -79,25 +80,26 @@ const useFileSystem = () => {
 
   const executeFile = async (fileName) => {
     if (!fileName) return;
-    await handleApiCall(executeFileApi, `${status.path}/${fileName}`);
+    const normalizedPath = normalizePath(status.path, fileName);
+    await handleApiCall(executeFileApi, normalizedPath);
   };
 
   const downloadFile = async (fileName) => {
     if (!fileName) return;
-    await handleApiCall(downloadFileApi, `${status.path}/${fileName}`);
+    const normalizedPath = normalizePath(status.path, fileName);
+    await handleApiCall(downloadFileApi, normalizedPath);
   };
 
   const uploadFile = async (file, onProgress) => {
     if (!file) return;
-    const currentPath = status.path || '/';
-  
-    console.log(`Uploading file to: ${currentPath}`);
-  
-    const response = await handleApiCall(uploadFileApi, file, currentPath, onProgress);
+    const normalizedPath = normalizePath('/', status.path);
+
+    console.log(`Uploading file to: ${normalizedPath}`);
+
+    const response = await handleApiCall(uploadFileApi, file, normalizedPath, onProgress);
     setFiles(response?.files?.filter((file) => !HIDDEN_FILES.includes(file.name)) || []);
     updateStatus(response);
   };
-  
 
   useEffect(() => {
     fetchFiles();

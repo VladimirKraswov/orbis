@@ -20,6 +20,7 @@ const Box = forwardRef(({
   pl,
   pr,
   bg,
+  center,
   backgroundColor = 'var(--color-background)',
   borderRadius = 'var(--border-radius)',
   border = 'none',
@@ -48,8 +49,8 @@ const Box = forwardRef(({
     boxShadow,
     display: 'flex',
     flexDirection: column ? 'column' : 'row',
-    justifyContent,
-    alignItems,
+    justifyContent : center ? 'center' : justifyContent,
+    alignItems : center ? 'center' : alignItems,
     gap,
     ...style,
   };

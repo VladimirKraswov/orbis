@@ -9,12 +9,12 @@
 	"dependencies": {
 		"preact": "^10.20.0",
 		"preact-router": "^4.1.2",
-		"prop-types": "^15.8.1",
 		"three": "^0.171.0"
 	},
 	"devDependencies": {
 		"@preact/preset-vite": "^2.8.2",
 		"http-proxy-middleware": "^3.0.3",
+		"prop-types": "^15.8.1",
 		"vite": "^5.2.2"
 	}
 }

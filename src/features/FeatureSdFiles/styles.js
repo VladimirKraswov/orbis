@@ -47,4 +47,9 @@ export const styles = {
     fontWeight: 'bold',
     width: '100%',
   },
+  disabledMessage: {
+    color: '#e57373',
+    fontSize: '14px',
+    textAlign: 'center',
+  }
 };

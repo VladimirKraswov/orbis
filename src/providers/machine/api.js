@@ -130,7 +130,7 @@ export const fetchMachineParameters = async () => {
  * @returns {Promise<Array>} The list of files.
  */
 export const fetchFilesApi = async (path = '/') => {
-    const url = `${BASE_URL}/upload?path=${encodeURIComponent(path)}`;
+    const url = `${BASE_URL}/upload?path=${path}`;
 
     try {
         const response = await fetch(url, { method: 'GET' });
@@ -151,7 +151,7 @@ export const fetchFilesApi = async (path = '/') => {
  * @returns {Promise<Object>} The server response.
  */
 export const createFolderApi = async (path, folderName) => {
-    const url = `${BASE_URL}/upload?path=${encodeURIComponent(path)}&action=createdir&filename=${encodeURIComponent(folderName)}`;
+    const url = `${BASE_URL}/upload?path=${path}&action=createdir&filename=${folderName}`;
 
     try {
         const response = await fetch(url, { method: 'GET' });
@@ -173,7 +173,7 @@ export const createFolderApi = async (path, folderName) => {
  * @returns {Promise<Object>} The server response.
  */
 export const renameFileApi = async (path, currentName, newName) => {
-    const url = `${BASE_URL}/upload?path=${encodeURIComponent(path)}&action=rename&filename=${encodeURIComponent(currentName)}&newname=${encodeURIComponent(newName)}`;
+    const url = `${BASE_URL}/upload?path=${path}&action=rename&filename=${currentName}&newname=${newName}`;
 
     try {
         const response = await fetch(url, { method: 'GET' });
@@ -194,7 +194,7 @@ export const renameFileApi = async (path, currentName, newName) => {
  * @returns {Promise<Object>} The server response.
  */
 export const deleteFileApi = async (path, fileName) => {
-    const url = `${BASE_URL}/upload?path=${encodeURIComponent(path)}&action=deletedir&filename=${encodeURIComponent(fileName)}`;
+    const url = `${BASE_URL}/upload?path=${path}&action=deletedir&filename=${fileName}`;
 
     try {
         const response = await fetch(url, { method: 'GET' });
@@ -215,11 +215,16 @@ export const deleteFileApi = async (path, fileName) => {
  * @returns {Promise<Object|null>} The server response or null.
  */
 export const executeFileApi = async (filePath, updateInterval = 50) => {
-    const commandText = `$SD/Run=${encodeURIComponent(filePath)}`;
+    const commandText = `$SD/Run=${filePath}`;
     const url = `${BASE_URL}/command?commandText=${commandText}&PAGEID=0`;
 
     try {
         await sendCommand(`$Report/Interval=${updateInterval}`);
+
+        console.log('executeFileApi', url);
+
+                           //command?commandText=$SD/Run=/iphoneF200.nc&PAGEID=0
+                           //command?commandText=$SD/Run=/iphoneF200.nc&PAGEID=0
 
         const response = await fetch(url, { method: 'GET' });
         if (!response.ok) {
@@ -239,7 +244,7 @@ export const executeFileApi = async (filePath, updateInterval = 50) => {
  * @param {string} filePath - The file path to download.
  */
 export const downloadFileApi = async (filePath) => {
-    const url = `${BASE_URL}/${encodeURIComponent(filePath)}`;
+    const url = `${BASE_URL}/${filePath}`;
 
     try {
         const response = await fetch(url, {

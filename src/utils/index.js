@@ -31,3 +31,14 @@ export const humanizeSize = (size) => {
   const i = Math.floor(Math.log(size) / Math.log(1024));
   return `${(size / Math.pow(1024, i)).toFixed(2)} ${units[i]}`;
 };
+
+export const normalizePath = (basePath, subPath) => {
+  if (!basePath.endsWith('/')) basePath += '/';
+  if (subPath.startsWith('/')) subPath = subPath.slice(1);
+
+  const result = `${basePath}${subPath}`.replace(/\/{2,}/g, '/');
+  return result.replace(/\/$/, '') || '/';
+};
+
+
+
