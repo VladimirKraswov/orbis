@@ -1,13 +1,6 @@
 export const styles = {
-  container: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
-    gap: "10px",
-  },
   formControlInput: {
-    flex: "1",
+    width: "100%",
     padding: "8px",
     fontSize: "14px",
     borderRadius: "4px",

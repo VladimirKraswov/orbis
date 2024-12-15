@@ -14,17 +14,6 @@ export const styles = {
     fontSize: '14px',
     textAlign: 'center',
   },
-  input: {
-    width: 'calc(100% - 20px)',
-    padding: '10px',
-    margin: '10px 0',
-    borderRadius: '6px',
-    border: '1px solid #444',
-    backgroundColor: '#2b2b2b',
-    color: '#e0e0e0',
-    fontSize: '14px',
-    boxSizing: 'border-box',
-  },
   dialogHeader: {
     fontSize: '18px',
     fontWeight: 'bold',

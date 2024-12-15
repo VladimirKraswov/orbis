@@ -13,12 +13,14 @@ const FeatureControls = () => {
   const { info: { mPos, wPos }, sendCommand } = useMachine();
   const [xyVelocity, setXYVelocity] = useState(1000);
   const [zVelocity, setZVelocity] = useState(500);
-  const handleXYVelocityChange = (value) => {
+  const handleXYVelocityChange = (e) => {
+    const value = parseInt(e.target.value, 10);
     console.log(`XY velocity updated to: ${value} mm/min`);
     setXYVelocity(value);
   };
 
-  const handleZVelocityChange = (value) => {
+  const handleZVelocityChange = (e) => {
+    const value = parseInt(e.target.value, 10);
     console.log(`Z velocity updated to: ${value} mm/min`);
     setZVelocity(value);
   };

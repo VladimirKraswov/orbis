@@ -7,6 +7,7 @@ import {
   Box,
   SvgIcon,
   DotMenu,
+  CustomInput,
 } from '../../components';
 import { useMachine } from '../../providers/machine';
 import { styles } from './styles';
@@ -15,7 +16,7 @@ import { humanizeSize } from '../../utils';
 import MemoryStatus from './components/MemoryStatus';
 
 const FeatureSdFiles = () => {
-  const [dialog, setDialog] = useState({ isOpen: false, type: '', data: null });
+  const [dialog, setDialog] = useState({ isOpen: false, type: '', data: null, input: '' });
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const inputRef = useRef(null);
@@ -62,20 +63,22 @@ const FeatureSdFiles = () => {
     fetchFiles(parentPath);
   };
 
-  const openDialog = (type, data = null) => setDialog({ isOpen: true, type, data });
-  const closeDialog = () => setDialog({ isOpen: false, type: '', data: null });
+  const openDialog = (type, data = null) =>
+    setDialog({ isOpen: true, type, data, input: data?.shortname || '' });
+
+  const closeDialog = () => setDialog({ isOpen: false, type: '', data: null, input: '' });
 
   const handleDialogConfirm = async () => {
-    const { type, data } = dialog;
-    if (!type) return;
+    const { type, data, input } = dialog;
+    if (!type || !input.trim()) return;
 
     try {
       switch (type) {
         case 'create-folder':
-          await createFolder(data, status.path);
+          await createFolder(input.trim(), status.path);
           break;
         case 'rename':
-          await renameFile(data.shortname, data.newName, status.path);
+          await renameFile(data.shortname, input.trim(), status.path);
           break;
         case 'delete':
           await deleteFile(data.shortname, status.path);
@@ -86,6 +89,7 @@ const FeatureSdFiles = () => {
         default:
           console.warn('Unknown dialog type');
       }
+      fetchFiles(status.path);
     } catch (err) {
       console.error(`Error during ${type} action:`, err);
     } finally {
@@ -95,7 +99,7 @@ const FeatureSdFiles = () => {
 
   const handleRowClick = (file) => {
     if (!file.size) return
-    
+
     if (file.size === '-1') {
       navigateTo(`${status.path}/${file.shortname}`);
     } else {
@@ -103,7 +107,6 @@ const FeatureSdFiles = () => {
     }
   };
 
-  // File and Folder Rendering
   const renderFileActions = (file) => [
     {
       label: 'Execute',
@@ -159,6 +162,25 @@ const FeatureSdFiles = () => {
     return rows;
   };
 
+  const renderDialogContent = () => {
+    const { type, input } = dialog;
+
+    if (type === 'delete') {
+      return <p>Confirm deletion?</p>;
+    }
+
+    return (
+      <Box fullWidth column >
+        <p>{type === 'create-folder' ? 'Create New Folder:' : 'Rename File/Folder:'}</p>
+        <CustomInput
+          value={input}
+          onChange={(e) => setDialog((prev) => ({ ...prev, input: e.target.value }))}
+          placeholder="Enter name"
+        />
+      </Box>
+    );
+  };
+
   // Render
   return (
     <FeatureContainer
@@ -202,9 +224,13 @@ const FeatureSdFiles = () => {
 
       <Modal isOpen={dialog.isOpen} onClose={closeDialog}>
         <Box column gap="1rem" style={styles.modalContent}>
-          <p>{dialog.type === 'delete' ? 'Confirm deletion?' : `Perform ${dialog.type}?`}</p>
+          {renderDialogContent()}
           <Box justifyContent="flex-end" gap="12px">
-            <Button variant="primary" onClick={handleDialogConfirm}>
+            <Button
+              variant="primary"
+              onClick={handleDialogConfirm}
+              disabled={!dialog.input.trim() && dialog.type !== 'delete'}
+            >
               Confirm
             </Button>
             <Button variant="secondary" onClick={closeDialog}>
