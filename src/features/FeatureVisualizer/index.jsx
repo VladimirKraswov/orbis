@@ -74,7 +74,7 @@ const FeatureVisualizer = () => {
         pathRef.current.addPoint(
           new THREE.Vector3(mPos.x, mPos.y, settings.considerZ ? mPos.z : 0.3)
         );
-        //pathRef.current.flushBuffer();
+        pathRef.current.flushBuffer();
       }
     }
   }, [mPos, settings]);
